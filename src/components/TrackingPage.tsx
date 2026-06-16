@@ -27,7 +27,17 @@ export default function TrackingPage({ hash }: { hash: string }) {
     let cancelled = false;
     async function load() {
       try {
-        const res = await fetch(`/api/track/${encodeURIComponent(hash)}`, {
+        // Default: hit the CF Pages Function which proxies to the
+        // records backend so the browser only sees opencharts.org URLs.
+        //
+        // VITE_TRACKING_API_BASE lets a local dev session bypass the
+        // function and fetch the records backend directly. Set it to
+        // the CMS backend's public-route URL during dev:
+        //   VITE_TRACKING_API_BASE=http://localhost:3001/api/public/records-request
+        const base =
+          (import.meta.env.VITE_TRACKING_API_BASE as string | undefined)?.trim() ||
+          '/api/track';
+        const res = await fetch(`${base}/${encodeURIComponent(hash)}`, {
           headers: { Accept: 'application/json' },
         });
         if (cancelled) return;
