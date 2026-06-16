@@ -58,8 +58,8 @@ export default function AuditTrail() {
                'repeating-linear-gradient(0deg, #fbfaf6 0 1px, transparent 1px 28px)',
            }}
       />
-      <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28 relative">
-        <div className="grid lg:grid-cols-12 gap-12">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 py-16 sm:py-20 lg:py-28 relative">
+        <div className="grid lg:grid-cols-12 gap-10 sm:gap-12">
           <div className="lg:col-span-4">
             <div className="text-[11px] uppercase tracking-[0.22em] text-paper/50">§ 05</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
@@ -76,21 +76,23 @@ export default function AuditTrail() {
             </div>
           </div>
 
-          <div className="lg:col-span-8">
-            <div className="bg-paper text-ink font-mono text-[13px] leading-relaxed border border-paper/20 shadow-2xl">
-              <div className="flex items-center justify-between px-5 py-3 border-b hairline bg-paper-warm/60">
-                <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-ink-muted">
+          <div className="lg:col-span-8 min-w-0">
+            <div className="bg-paper text-ink font-mono text-[12px] sm:text-[13px] leading-relaxed border border-paper/20 shadow-2xl overflow-hidden">
+              <div className="flex flex-wrap items-center justify-between gap-y-1 px-4 sm:px-5 py-3 border-b hairline bg-paper-warm/60">
+                <div className="flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-[0.16em] sm:tracking-[0.18em] text-ink-muted">
                   <span className="inline-block w-2 h-2 rounded-full bg-seal" />
                   <span>opencharts-audit.log</span>
                 </div>
-                <div className="text-[11px] text-ink-muted">PATIENT: A. MORALES · MR# 884201</div>
+                <div className="text-[10px] sm:text-[11px] text-ink-muted">
+                  PATIENT: A. MORALES · MR# 884201
+                </div>
               </div>
               <div className="divide-y hairline">
                 {log.map((entry) => (
                   <LogRow key={entry.day} entry={entry} />
                 ))}
               </div>
-              <div className="px-5 py-3 border-t hairline bg-paper-warm/60 flex items-center justify-between text-[11px] text-ink-muted">
+              <div className="px-4 sm:px-5 py-3 border-t hairline bg-paper-warm/60 flex flex-wrap items-center justify-between gap-y-1 text-[10px] sm:text-[11px] text-ink-muted">
                 <span>signed · hashed · ready to export</span>
                 <span className="font-mono">sha256: 4a7b…91f0</span>
               </div>
@@ -117,18 +119,36 @@ function LogRow({ entry }: { entry: (typeof log)[number] }) {
     : 'text-ink-soft';
 
   return (
-    <div className={`grid grid-cols-[68px_98px_1fr] gap-4 px-5 py-3 ${bg}`}>
-      <div className={`font-medium ${accent}`}>{entry.day}</div>
-      <div className="text-ink-muted">
-        <div>{entry.date}</div>
-        <div className="text-[11px]">{entry.time}</div>
-      </div>
-      <div>
-        <div className={`font-semibold ${isViolation ? 'text-seal' : 'text-ink'}`}>
+    <div className={`px-4 sm:px-5 py-3 ${bg}`}>
+      {/* Mobile: day + date on one line, event + detail below */}
+      <div className="sm:hidden">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className={`font-medium ${accent}`}>{entry.day}</span>
+          <span className="text-ink-muted text-[11px]">
+            {entry.date} · {entry.time}
+          </span>
+        </div>
+        <div className={`mt-1.5 font-semibold break-words ${isViolation ? 'text-seal' : 'text-ink'}`}>
           {isViolation && '⚑ '}
           {entry.event}
         </div>
-        <div className="text-ink-muted text-[12px] mt-0.5">{entry.detail}</div>
+        <div className="text-ink-muted text-[11px] mt-1 break-words">{entry.detail}</div>
+      </div>
+
+      {/* Tablet+: three-column tabular layout */}
+      <div className="hidden sm:grid grid-cols-[68px_98px_minmax(0,1fr)] gap-4">
+        <div className={`font-medium ${accent}`}>{entry.day}</div>
+        <div className="text-ink-muted">
+          <div>{entry.date}</div>
+          <div className="text-[11px]">{entry.time}</div>
+        </div>
+        <div className="min-w-0">
+          <div className={`font-semibold break-words ${isViolation ? 'text-seal' : 'text-ink'}`}>
+            {isViolation && '⚑ '}
+            {entry.event}
+          </div>
+          <div className="text-ink-muted text-[12px] mt-0.5 break-words">{entry.detail}</div>
+        </div>
       </div>
     </div>
   );

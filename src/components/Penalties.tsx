@@ -42,7 +42,7 @@ export default function Penalties() {
               maximums above $2 million per category per year. Exposure scales fast.
             </p>
 
-            <div className="mt-8 grid grid-cols-3 gap-px bg-ink/15 border hairline">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-px bg-ink/15 border hairline">
               <Stat n="$140M+" label="Cumulative HIPAA penalties collected by HHS OCR" />
               <Stat n="$2.1M" label="Max per-violation-category penalty per year (Tier 4)" />
               <Stat n="Public" label="Every case names a real provider, indexed by Google" />
