@@ -4,7 +4,7 @@ export default function TheLaw() {
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 02</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 03</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
               What the law actually says.
             </h2>
@@ -38,6 +38,14 @@ export default function TheLaw() {
                 </a>
               </figcaption>
             </figure>
+
+            <div className="rounded-sm border hairline border-l-4 border-l-moss bg-paper-warm/40 p-5 text-sm text-ink-soft leading-relaxed">
+              <span className="font-semibold text-ink">A federal floor, not a ceiling.</span>{' '}
+              Several states have additional or stricter access rules (notably California's CMIA,
+              New York's PHL § 18, Texas H&amp;SC § 159). The 30-day federal deadline still
+              applies; your state may shorten it or add procedures. State-specific request
+              templates are being added to the project on GitHub.
+            </div>
 
             <div className="grid sm:grid-cols-3 gap-px bg-ink/15">
               <PlainFact

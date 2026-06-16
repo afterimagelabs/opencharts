@@ -14,8 +14,8 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-7 text-sm">
           <a href="#the-law" className="hover:text-seal transition-colors">The law</a>
           <a href="#penalties" className="hover:text-seal transition-colors">Penalties</a>
+          <a href="#for-providers" className="hover:text-seal transition-colors">For providers</a>
           <a href="#start" className="hover:text-seal transition-colors">Get started</a>
-          <a href="#about" className="hover:text-seal transition-colors">About</a>
           <a
             href="https://github.com/afterimagelabs/opencharts"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-ink rounded-full text-xs font-medium hover:bg-ink hover:text-paper transition-colors"

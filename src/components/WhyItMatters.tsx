@@ -33,7 +33,7 @@ export default function WhyItMatters() {
     <section id="why" className="border-b hairline">
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="max-w-3xl">
-          <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 03</div>
+          <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 04</div>
           <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
             Why a delayed record is never just paperwork.
           </h2>

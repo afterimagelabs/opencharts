@@ -2,6 +2,7 @@ import ProviderAlert from './components/ProviderAlert';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Penalties from './components/Penalties';
+import Providers from './components/Providers';
 import TheLaw from './components/TheLaw';
 import WhyItMatters from './components/WhyItMatters';
 import AuditTrail from './components/AuditTrail';
@@ -19,6 +20,7 @@ export default function App() {
       <main>
         <Hero />
         <Penalties />
+        <Providers />
         <TheLaw />
         <WhyItMatters />
         <AuditTrail />

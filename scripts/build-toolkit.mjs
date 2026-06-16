@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
-import { writeFileSync, mkdirSync } from 'node:fs';
+import sharp from 'sharp';
+import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -515,11 +516,23 @@ function buildLog() {
   console.log('  ✓ toolkit/audit-log.csv');
 }
 
+async function buildOgImage() {
+  const svgPath = join(__dirname, '..', 'public', 'og.svg');
+  const pngPath = join(__dirname, '..', 'public', 'og.png');
+  const svg = readFileSync(svgPath);
+  await sharp(svg, { density: 200 })
+    .resize(1200, 630, { fit: 'contain', background: { r: 251, g: 250, b: 246, alpha: 1 } })
+    .png()
+    .toFile(pngPath);
+  console.log('  ✓ og.png (1200×630, rasterized from og.svg)');
+}
+
 async function main() {
   console.log('Building OpenCharts toolkit artifacts...');
   await buildLetter();
   await buildComplaintGuide();
   buildLog();
+  await buildOgImage();
   console.log('Done.');
 }
 

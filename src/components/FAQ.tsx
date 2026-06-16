@@ -20,6 +20,14 @@ const qs = [
     a: "If the records are kept electronically, you have the right to receive them in an electronic form and format of your choice, as long as that format is readily producible. The provider can't force you to take paper if a usable PDF or download is available.",
   },
   {
+    q: 'How fast does OCR actually act on a complaint?',
+    a: "Slowly, usually. OCR's published complaint process can take many months to resolve, and most complaints are closed without a formal enforcement action. That does not mean filing is pointless. A filed complaint creates a record, signals a pattern when paired with others, and is sometimes enough on its own to make a provider move. But if you need the records this week, the OCR complaint is the long-game lever. The first-shift levers are the certified-mail follow-up and a call to the practice administrator or the provider's compliance officer.",
+  },
+  {
+    q: "Could my provider drop me as a patient for sending this letter?",
+    a: "Some patients worry about this and it is a fair worry. Providers can generally end the patient relationship, but they have to do it cleanly: with notice, with referrals, and without abandoning you mid-treatment. Filing a HIPAA records request is exercising a federal right, and retaliation specifically for exercising that right is itself a HIPAA violation under 45 CFR § 164.530(g). If you are concerned, send the request through the patient portal or by certified mail (less personal than a confrontation), keep your audit log clean, and consider talking to an attorney before escalating to an OCR complaint.",
+  },
+  {
     q: 'Where does the OpenCharts project live, and who runs it?',
     a: "OpenCharts is a small, volunteer project. The code, the documents, and every change are on GitHub at afterimagelabs/opencharts. We don't take donations, sell anything, or run ads. The easiest way to help is a pull request.",
   },
@@ -31,7 +39,7 @@ export default function FAQ() {
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 07</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 08</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
               Common questions.
             </h2>
