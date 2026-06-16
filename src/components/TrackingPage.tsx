@@ -2,14 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 
 type Event = {
   at: string;
-  type: 'initiated' | 'call' | 'fax' | 'email';
+  type: 'call' | 'fax' | 'email';
 };
 
 type TrackingPayload = {
   hash: string;
-  initial_request_at: string;
-  deadline: string;
-  days_open: number;
+  initial_request_at: string | null;
+  initial_channel: Event['type'] | null;
+  deadline: string | null;
+  days_open: number | null;
   deadline_passed: boolean;
   events: Event[];
 };
@@ -137,12 +138,16 @@ function Card({ state, hash }: { state: State; hash: string }) {
 
 function Timeline({ data }: { data: TrackingPayload }) {
   const eventCount = data.events.length;
+  const notYetSent = data.initial_request_at === null;
   const status = useMemo(() => {
+    if (notYetSent) {
+      return { tone: 'moss' as const, label: 'Awaiting first contact' };
+    }
     if (data.deadline_passed) {
       return { tone: 'seal' as const, label: 'Deadline passed' };
     }
     return { tone: 'moss' as const, label: 'Within 30-day window' };
-  }, [data.deadline_passed]);
+  }, [data.deadline_passed, notYetSent]);
 
   return (
     <Panel>
@@ -153,15 +158,35 @@ function Timeline({ data }: { data: TrackingPayload }) {
         <StatusPill tone={status.tone}>{status.label}</StatusPill>
       </div>
 
-      <div className="grid grid-cols-3 gap-px bg-ink/15 border hairline mt-6">
-        <Stat label="Initial request" value={fmtDate(data.initial_request_at)} sub={fmtTime(data.initial_request_at)} />
-        <Stat label="30-day deadline" value={fmtDate(data.deadline)} sub={fmtTime(data.deadline)} />
-        <Stat
-          label="Days open"
-          value={String(data.days_open)}
-          sub={data.deadline_passed ? `${data.days_open - 30} past deadline` : `${30 - data.days_open} remaining`}
-        />
-      </div>
+      {notYetSent ? (
+        <p className="mt-6 text-ink-soft leading-relaxed">
+          The records request for this provider has been prepared but has not
+          yet been sent. The 30-day clock starts when the first fax, email, or
+          call goes out, not when the provider was added to the workflow.
+        </p>
+      ) : (
+        <div className="grid grid-cols-3 gap-px bg-ink/15 border hairline mt-6">
+          <Stat
+            label={`Initial request · ${channelLabel(data.initial_channel!)}`}
+            value={fmtDate(data.initial_request_at!)}
+            sub={fmtTime(data.initial_request_at!)}
+          />
+          <Stat
+            label="30-day deadline"
+            value={fmtDate(data.deadline!)}
+            sub={fmtTime(data.deadline!)}
+          />
+          <Stat
+            label="Days open"
+            value={String(data.days_open)}
+            sub={
+              data.deadline_passed
+                ? `${data.days_open! - 30} past deadline`
+                : `${30 - data.days_open!} remaining`
+            }
+          />
+        </div>
+      )}
 
       <h3 className="font-serif text-xl mt-10 mb-3 font-semibold">
         Timeline
@@ -176,7 +201,7 @@ function Timeline({ data }: { data: TrackingPayload }) {
         </div>
         <div className="divide-y hairline">
           {data.events.map((event, i) => (
-            <Row key={i} event={event} />
+            <Row key={i} event={event} isFirst={i === 0} />
           ))}
         </div>
       </div>
@@ -191,9 +216,11 @@ function Timeline({ data }: { data: TrackingPayload }) {
   );
 }
 
-function Row({ event }: { event: Event }) {
-  const label = labelFor(event.type);
-  const accent = event.type === 'initiated' ? 'text-seal font-semibold' : 'text-ink';
+function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
+  const label = isFirst
+    ? `Records request sent · ${channelLabel(event.type)}`
+    : followUpLabelFor(event.type);
+  const accent = isFirst ? 'text-seal font-semibold' : 'text-ink';
   return (
     <div className="grid grid-cols-[80px_60px_1fr] gap-4 px-5 py-3">
       <div className="text-ink-muted">{fmtDate(event.at)}</div>
@@ -203,16 +230,25 @@ function Row({ event }: { event: Event }) {
   );
 }
 
-function labelFor(type: Event['type']): string {
+function followUpLabelFor(type: Event['type']): string {
   switch (type) {
-    case 'initiated':
-      return 'Records request initiated';
     case 'call':
       return 'Follow-up phone call';
     case 'fax':
-      return 'Fax sent';
+      return 'Follow-up fax';
     case 'email':
       return 'Follow-up email';
+  }
+}
+
+function channelLabel(type: Event['type']): string {
+  switch (type) {
+    case 'call':
+      return 'phone call';
+    case 'fax':
+      return 'fax';
+    case 'email':
+      return 'email';
   }
 }
 
