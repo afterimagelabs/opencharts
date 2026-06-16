@@ -4,20 +4,155 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpenCharts: Hold your providers to the 30-day rule</title>
-    <meta name="description" content="Under HIPAA, you have the right to receive your medical records within 30 days of asking. OpenCharts is a free, open-source toolkit to help patients build an audit trail when providers delay." />
+    <title>OpenCharts — HIPAA 30-day records request rule, with a toolkit</title>
+    <meta name="description" content="Free, open-source HIPAA records request toolkit. Send the letter, track the 30-day deadline under 45 CFR § 164.524, file an OCR complaint when providers delay. Patient-rights project, not legal advice." />
+    <link rel="canonical" href="https://opencharts.org/" />
     <meta name="theme-color" content="#fbfaf6" />
-    <meta property="og:title" content="OpenCharts: Hold your providers to the 30-day rule" />
-    <meta property="og:description" content="A free, open-source toolkit for patients to document their HIPAA records request and the 30-day clock." />
+    <meta property="og:title" content="OpenCharts — Hold your providers to the 30-day rule" />
+    <meta property="og:description" content="A free, open-source toolkit for patients to document a HIPAA records request and the 30-day clock under 45 CFR § 164.524." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://opencharts.org" />
-    <meta property="og:image" content="/og.png" />
+    <meta property="og:url" content="https://opencharts.org/" />
+    <meta property="og:image" content="https://opencharts.org/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="OpenCharts" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OpenCharts — Hold your providers to the 30-day rule" />
+    <meta name="twitter:description" content="A free, open-source HIPAA records request toolkit. Letter, audit log, OCR complaint guide." />
+    <meta name="twitter:image" content="https://opencharts.org/og.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "OpenCharts",
+      "alternateName": "The OpenCharts Project",
+      "url": "https://opencharts.org/",
+      "logo": "https://opencharts.org/og.png",
+      "description": "A free, open-source toolkit to help patients in the United States exercise their HIPAA right of access under 45 CFR § 164.524 and document the 30-day records-delivery deadline.",
+      "sameAs": [
+        "https://github.com/afterimagelabs/opencharts"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "OpenCharts",
+      "url": "https://opencharts.org/",
+      "publisher": {
+        "@type": "Organization",
+        "name": "OpenCharts"
+      },
+      "inLanguage": "en-US"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is OpenCharts a law firm? Is this legal advice?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. OpenCharts is a public-interest project, not a law firm, and nothing on this site is legal advice. The HIPAA Privacy Rule is federal law that applies on its own. We just help you exercise the access right it already grants you. For your specific situation, talk to an attorney."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does this work outside the United States?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The 30-day deadline is a U.S. federal rule (45 CFR § 164.524). Most other countries have their own access laws: Canada (PIPEDA), the UK and EU (GDPR Article 15), Australia (Privacy Act). The deadlines and the complaint processes are different."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if my provider says they need more than 30 days?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They can extend once, by up to 30 days, but only if they tell you in writing within the first 30 days and explain the delay. A verbal 'we need more time' doesn't qualify. If you got no written notice and Day 30 passed, the extension didn't happen."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can my provider charge me for the records?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "They can charge a reasonable, cost-based fee. That covers labor for copying, postage, and the cost of the storage media. It does not cover searching or retrieving the records, and a per-page fee can't exceed actual cost. HHS published the specific limits in its 2016 guidance."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What format am I entitled to receive my records in?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "If the records are kept electronically, you have the right to receive them in an electronic form and format of your choice, as long as that format is readily producible. The provider can't force you to take paper if a usable PDF or download is available."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How fast does OCR actually act on a complaint?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Slowly, usually. OCR's published complaint process can take many months to resolve, and most complaints are closed without a formal enforcement action. That does not mean filing is pointless. A filed complaint creates a record, signals a pattern when paired with others, and is sometimes enough on its own to make a provider move."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Could my provider drop me as a patient for sending this letter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Providers can generally end the patient relationship, but they have to do it cleanly: with notice, with referrals, and without abandoning you mid-treatment. Filing a HIPAA records request is exercising a federal right, and retaliation specifically for exercising that right is itself a HIPAA violation under 45 CFR § 164.530(g)."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to request your medical records under HIPAA's 30-day rule",
+      "description": "A four-step process for exercising your HIPAA right of access under 45 CFR § 164.524: send a written request, log every contact, check on Day 30, and file an OCR complaint if needed.",
+      "totalTime": "P30D",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Send the request",
+          "text": "Download the OpenCharts request letter, fill in your provider and date of birth, and mail it certified. Keep the green slip; that scan is your Day 0 timestamp.",
+          "url": "https://opencharts.org/#start"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Log every contact",
+          "text": "Each time you phone, email, or hear from the provider, add a row to the audit log. One row per contact, in plain English.",
+          "url": "https://opencharts.org/#start"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Check on Day 30 for the records or the extension",
+          "text": "If the records arrived, you're done. If a written extension arrived, log it. If neither arrived, you're in the OCR-complaint window.",
+          "url": "https://opencharts.org/#start"
+        },
+        {
+          "@type": "HowToStep",
+          "name": "File the OCR complaint",
+          "text": "Export the audit log, paste the summary into the pre-filled OCR complaint, and submit. The full timeline goes in as your evidence attachment.",
+          "url": "https://opencharts.org/#start"
+        }
+      ]
+    }
+    </script>
   </head>
   <body class="bg-paper text-ink antialiased">
     <div id="root"></div>
