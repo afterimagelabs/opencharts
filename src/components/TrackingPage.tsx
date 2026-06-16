@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 type Event = {
   at: string;
-  type: 'initiated' | 'call' | 'fax';
+  type: 'initiated' | 'call' | 'fax' | 'email';
 };
 
 type TrackingPayload = {
@@ -201,6 +201,8 @@ function labelFor(type: Event['type']): string {
       return 'Follow-up phone call';
     case 'fax':
       return 'Fax sent';
+    case 'email':
+      return 'Follow-up email';
   }
 }
 
