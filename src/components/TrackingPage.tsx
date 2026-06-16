@@ -8,7 +8,14 @@ type EventType =
   | 'records_incomplete'
   | 'note_added';
 type ContactChannel = 'call' | 'fax' | 'email';
-type Event = { at: string; type: EventType; content?: string };
+type Event = {
+  at: string;
+  type: EventType;
+  content?: string;
+  // Only set for records_received events. True when ops flagged the
+  // returned records as incomplete (partial, missing date ranges, etc.).
+  incomplete?: boolean;
+};
 
 type TrackingPayload = {
   hash: string;
@@ -297,11 +304,21 @@ function Timeline({ data }: { data: TrackingPayload }) {
 }
 
 function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
-  let label: string;
+  let label: React.ReactNode;
   let accent: string;
   if (event.type === 'records_received') {
-    label = 'Records received';
-    accent = 'text-moss font-semibold';
+    if (event.incomplete) {
+      label = (
+        <>
+          Records received{' '}
+          <span className="text-seal font-semibold">· flagged incomplete</span>
+        </>
+      );
+      accent = 'text-moss font-semibold';
+    } else {
+      label = 'Records received';
+      accent = 'text-moss font-semibold';
+    }
   } else if (event.type === 'records_incomplete') {
     label = 'Records flagged incomplete';
     accent = 'text-seal font-semibold';
