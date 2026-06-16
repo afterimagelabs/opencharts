@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 type EventType = 'call' | 'fax' | 'email' | 'records_received' | 'note_added';
 type ContactChannel = 'call' | 'fax' | 'email';
-type Event = { at: string; type: EventType };
+type Event = { at: string; type: EventType; content?: string };
 
 type TrackingPayload = {
   hash: string;
@@ -86,7 +86,8 @@ function Header() {
       </h1>
       <p className="mt-3 text-ink-soft text-sm leading-relaxed">
         This page shows the timestamped contact events for a single records
-        request. It contains no protected health information.
+        request and the internal notes recorded by the records team while
+        following up.
       </p>
     </header>
   );
@@ -229,9 +230,9 @@ function Timeline({ data }: { data: TrackingPayload }) {
 
       <p className="mt-8 text-xs text-ink-muted leading-relaxed">
         All entries are written at the time the corresponding event occurs and
-        cannot be backdated. This page lists only dates and event categories;
-        no patient identity, condition, address, or contents of any
-        communication are exposed.
+        cannot be backdated. Contact rows list only the date and event
+        category; the contents of the call, fax, or email are not exposed.
+        Internal notes recorded by the records team are shown verbatim.
       </p>
     </Panel>
   );
@@ -244,7 +245,7 @@ function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
     label = 'Records received';
     accent = 'text-moss font-semibold';
   } else if (event.type === 'note_added') {
-    label = 'Internal note added';
+    label = 'Internal note';
     accent = 'text-ink-muted italic';
   } else if (isFirst) {
     label = `Records request sent · ${channelLabel(event.type)}`;
@@ -257,7 +258,14 @@ function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
     <div className="grid grid-cols-[80px_60px_1fr] gap-4 px-5 py-3">
       <div className="text-ink-muted">{fmtDate(event.at)}</div>
       <div className="text-ink-muted">{fmtTime(event.at)}</div>
-      <div className={accent}>{label}</div>
+      <div>
+        <div className={accent}>{label}</div>
+        {event.type === 'note_added' && event.content && (
+          <div className="mt-1 text-ink-soft text-[13px] leading-relaxed whitespace-pre-wrap font-sans not-italic">
+            {event.content}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -335,7 +343,7 @@ function Footer() {
         </a>
       </span>
       <span className="font-mono">
-        opencharts.org/request/&lt;hash&gt; · public timeline · no PHI
+        opencharts.org/request/&lt;hash&gt; · public timeline
       </span>
     </footer>
   );
