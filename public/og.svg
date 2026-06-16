@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#fbfaf6"/>
+  <g opacity="0.5">
+    <circle cx="120" cy="120" r="1" fill="#5a4b28"/>
+    <circle cx="320" cy="80" r="1" fill="#5a4b28"/>
+    <circle cx="540" cy="170" r="1" fill="#5a4b28"/>
+    <circle cx="780" cy="60" r="1" fill="#5a4b28"/>
+  </g>
+  <g transform="translate(80, 100)">
+    <rect x="0" y="0" width="40" height="40" rx="5" fill="none" stroke="#15171a" stroke-width="2"/>
+    <path d="M8 14h24M8 20h24M8 26h14" stroke="#15171a" stroke-width="2" stroke-linecap="square"/>
+    <circle cx="32" cy="28" r="6" fill="#7a1f1f"/>
+    <text x="58" y="28" font-family="Georgia, serif" font-size="28" font-weight="600" fill="#15171a">OpenCharts</text>
+    <text x="58" y="48" font-family="Inter, sans-serif" font-size="13" letter-spacing="3" fill="#5a5f6a">A PUBLIC-INTEREST PROJECT</text>
+  </g>
+  <text x="80" y="320" font-family="Georgia, serif" font-size="78" font-weight="700" fill="#15171a">Hold your providers</text>
+  <text x="80" y="410" font-family="Georgia, serif" font-size="78" font-weight="700" fill="#15171a">to the <tspan fill="#7a1f1f">30-day rule</tspan>.</text>
+  <text x="80" y="490" font-family="Inter, sans-serif" font-size="22" fill="#2a2d33">Under HIPAA, you have the right to your medical records in 30 days.</text>
+  <text x="80" y="522" font-family="Inter, sans-serif" font-size="22" fill="#2a2d33">OpenCharts helps you build the audit trail when providers stall.</text>
+  <g transform="translate(950, 240)">
+    <circle cx="0" cy="0" r="160" fill="none" stroke="#7a1f1f" stroke-width="3"/>
+    <circle cx="0" cy="0" r="148" fill="none" stroke="#7a1f1f" stroke-width="1" opacity="0.6"/>
+    <text text-anchor="middle" x="0" y="-50" font-family="Inter, sans-serif" font-size="12" letter-spacing="4" font-weight="600" fill="#7a1f1f">45 CFR § 164.524</text>
+    <text text-anchor="middle" x="0" y="35" font-family="Georgia, serif" font-size="120" font-weight="700" fill="#7a1f1f">30</text>
+    <text text-anchor="middle" x="0" y="75" font-family="Inter, sans-serif" font-size="12" letter-spacing="4" font-weight="600" fill="#7a1f1f">DAYS · MAXIMUM</text>
+  </g>
+  <text x="80" y="585" font-family="Inter, sans-serif" font-size="14" letter-spacing="2" fill="#5a5f6a">FREE · OPEN SOURCE · MIT LICENSED · OPENCHARTS.ORG</text>
+</svg>

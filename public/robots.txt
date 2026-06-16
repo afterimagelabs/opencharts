@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://opencharts.org/sitemap.xml
