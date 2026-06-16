@@ -6,8 +6,8 @@ const cases = [
     amount: '$85,000',
     summary:
       "The first settlement under the HHS Right of Access Initiative. A mother asked for her unborn child's fetal heart monitor records. The hospital took more than nine months to hand them over.",
-    href: 'https://www.hhs.gov/about/news/2019/09/09/ocr-settles-first-case-in-hipaa-right-of-access-initiative.html',
-    source: 'HHS Press Release · Sept 9, 2019',
+    href: 'https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html',
+    source: 'HHS · Sept 2019 · Listed on the OCR Resolution Agreements page',
   },
   {
     provider: 'Korunda Medical',
@@ -16,8 +16,8 @@ const cases = [
     amount: '$85,000',
     summary:
       'The second Right of Access settlement, three months after Bayfront. A patient asked the practice to send their records to a third party in a specific electronic format. The practice repeatedly failed to do so.',
-    href: 'https://www.hhs.gov/about/news/2019/12/12/ocr-settles-second-case-hipaa-right-access-initiative.html',
-    source: 'HHS Press Release · Dec 12, 2019',
+    href: 'https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html',
+    source: 'HHS · Dec 2019 · Listed on the OCR Resolution Agreements page',
   },
 ];
 
@@ -116,7 +116,7 @@ export default function Penalties() {
                 <div className="mt-5 pt-4 border-t hairline flex items-center justify-between text-xs">
                   <span className="text-ink-muted uppercase tracking-[0.18em]">{c.source}</span>
                   <span className="text-seal group-hover:underline underline-offset-4">
-                    Read the press release ↗
+                    Open the HHS list ↗
                   </span>
                 </div>
               </a>
