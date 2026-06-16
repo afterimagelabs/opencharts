@@ -182,7 +182,7 @@ function Timeline({ data }: { data: TrackingPayload }) {
           call goes out, not when the provider was added to the workflow.
         </p>
       ) : (
-        <div className="grid grid-cols-3 gap-px bg-ink/15 border hairline mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-ink/15 border hairline mt-6">
           <Stat
             label={`Initial request · ${channelLabel(data.initial_channel!)}`}
             value={fmtDate(data.initial_request_at!)}

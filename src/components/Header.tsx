@@ -1,21 +1,33 @@
+import { useState } from 'react';
+
+const NAV_LINKS: Array<{ href: string; label: string }> = [
+  { href: '#the-law', label: 'The law' },
+  { href: '#penalties', label: 'Penalties' },
+  { href: '#for-providers', label: 'For providers' },
+  { href: '#start', label: 'Get started' },
+];
+
 export default function Header() {
+  const [open, setOpen] = useState(false);
   return (
     <header className="border-b hairline bg-paper/80 backdrop-blur sticky top-0 z-30">
-      <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2.5 group">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+        <a href="#top" className="flex items-center gap-2.5 group min-w-0">
           <Mark />
-          <div className="leading-none">
-            <div className="font-serif text-lg font-semibold tracking-tight">OpenCharts</div>
-            <div className="text-[10px] uppercase tracking-[0.18em] text-ink-muted mt-0.5">
+          <div className="leading-none min-w-0">
+            <div className="font-serif text-lg font-semibold tracking-tight truncate">OpenCharts</div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-ink-muted mt-0.5 truncate">
               A public-interest project
             </div>
           </div>
         </a>
+
         <nav className="hidden md:flex items-center gap-7 text-sm">
-          <a href="#the-law" className="hover:text-seal transition-colors">The law</a>
-          <a href="#penalties" className="hover:text-seal transition-colors">Penalties</a>
-          <a href="#for-providers" className="hover:text-seal transition-colors">For providers</a>
-          <a href="#start" className="hover:text-seal transition-colors">Get started</a>
+          {NAV_LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="hover:text-seal transition-colors">
+              {l.label}
+            </a>
+          ))}
           <a
             href="https://github.com/afterimagelabs/opencharts"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-ink rounded-full text-xs font-medium hover:bg-ink hover:text-paper transition-colors"
@@ -24,8 +36,69 @@ export default function Header() {
             <span>GitHub</span>
           </a>
         </nav>
+
+        {/* Mobile menu trigger */}
+        <button
+          type="button"
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="mobile-nav"
+          onClick={() => setOpen((v) => !v)}
+          className="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-sm border border-ink hover:bg-ink hover:text-paper transition-colors shrink-0"
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </button>
       </div>
+
+      {/* Mobile menu panel */}
+      {open && (
+        <nav
+          id="mobile-nav"
+          className="md:hidden border-t hairline bg-paper"
+          aria-label="Mobile navigation"
+        >
+          <div className="mx-auto max-w-6xl px-5 py-3 flex flex-col">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setOpen(false)}
+                className="py-2.5 border-b hairline text-base hover:text-seal transition-colors"
+              >
+                {l.label}
+              </a>
+            ))}
+            <a
+              href="https://github.com/afterimagelabs/opencharts"
+              onClick={() => setOpen(false)}
+              className="mt-3 inline-flex items-center gap-2 self-start px-3 py-2 border border-ink rounded-full text-sm font-medium hover:bg-ink hover:text-paper transition-colors"
+            >
+              <GitHubIcon />
+              <span>GitHub</span>
+            </a>
+          </div>
+        </nav>
+      )}
     </header>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" aria-hidden>
+      <line x1="4" y1="7" x2="20" y2="7" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="17" x2="20" y2="17" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" aria-hidden>
+      <line x1="5" y1="5" x2="19" y2="19" />
+      <line x1="19" y1="5" x2="5" y2="19" />
+    </svg>
   );
 }
 
