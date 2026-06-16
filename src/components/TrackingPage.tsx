@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-type EventType = 'call' | 'fax' | 'email' | 'records_received';
+type EventType = 'call' | 'fax' | 'email' | 'records_received' | 'note_added';
 type ContactChannel = 'call' | 'fax' | 'email';
 type Event = { at: string; type: EventType };
 
@@ -217,7 +217,9 @@ function Timeline({ data }: { data: TrackingPayload }) {
         </div>
         <div className="divide-y hairline">
           {(() => {
-            const firstOutboundIdx = data.events.findIndex((e) => e.type !== 'records_received');
+            const firstOutboundIdx = data.events.findIndex(
+              (e) => e.type !== 'records_received' && e.type !== 'note_added',
+            );
             return data.events.map((event, i) => (
               <Row key={i} event={event} isFirst={i === firstOutboundIdx} />
             ));
@@ -241,6 +243,9 @@ function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
   if (event.type === 'records_received') {
     label = 'Records received';
     accent = 'text-moss font-semibold';
+  } else if (event.type === 'note_added') {
+    label = 'Internal note added';
+    accent = 'text-ink-muted italic';
   } else if (isFirst) {
     label = `Records request sent · ${channelLabel(event.type)}`;
     accent = 'text-seal font-semibold';
