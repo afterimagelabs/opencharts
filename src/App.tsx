@@ -1,7 +1,8 @@
+import ProviderAlert from './components/ProviderAlert';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import TheLaw from './components/TheLaw';
 import Penalties from './components/Penalties';
+import TheLaw from './components/TheLaw';
 import WhyItMatters from './components/WhyItMatters';
 import AuditTrail from './components/AuditTrail';
 import Toolkit from './components/Toolkit';
@@ -12,11 +13,12 @@ import Footer from './components/Footer';
 export default function App() {
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <ProviderAlert />
       <Header />
       <main>
         <Hero />
-        <TheLaw />
         <Penalties />
+        <TheLaw />
         <WhyItMatters />
         <AuditTrail />
         <Toolkit />

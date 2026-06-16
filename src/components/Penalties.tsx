@@ -27,7 +27,7 @@ export default function Penalties() {
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="grid lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-5">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 02</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 01</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
               Yes, the rule has teeth.
             </h2>
