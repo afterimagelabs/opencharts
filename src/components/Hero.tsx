@@ -71,20 +71,20 @@ function Seal() {
     <div className="relative aspect-square max-w-md mx-auto">
       <div className="absolute inset-0 rounded-full bg-paper-warm border-2 border-seal" />
       <div className="absolute inset-3 rounded-full border border-seal/70" />
-      <div className="absolute inset-0 flex items-center justify-center text-center px-16">
-        <div className="max-w-[78%]">
-          <div className="text-[10px] uppercase tracking-[0.32em] text-seal font-medium mb-2">
+      <div className="absolute inset-0 flex items-center justify-center text-center px-12">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.32em] text-seal font-medium mb-3">
             45 CFR § 164.524
           </div>
           <div className="font-serif text-[68px] leading-none font-bold text-seal">30</div>
-          <div className="text-[10px] uppercase tracking-[0.32em] text-seal font-medium mt-2">
+          <div className="text-[10px] uppercase tracking-[0.32em] text-seal font-medium mt-3">
             Days · Maximum
           </div>
-          <div className="mt-4 mx-auto w-10 h-px bg-seal/60" />
-          <div className="mt-3 font-serif italic text-[11px] text-ink-soft leading-snug">
+          <div className="mt-6 mx-auto w-12 h-px bg-seal/60" />
+          <div className="mt-4 font-serif italic text-xs text-ink-soft leading-snug">
             "...not later than 30 days after receipt of the request..."
           </div>
-          <div className="mt-2 text-[9px] uppercase tracking-[0.25em] text-ink-muted">
+          <div className="mt-3 text-[9px] uppercase tracking-[0.25em] text-ink-muted">
             HHS · Office for Civil Rights
           </div>
         </div>
@@ -102,17 +102,11 @@ function CurvedText() {
       aria-hidden
     >
       <defs>
-        <path id="curve-top" d="M 22 200 A 178 178 0 0 1 378 200" />
-        <path id="curve-bot" d="M 22 200 A 178 178 0 0 0 378 200" />
+        <path id="curve-top" d="M 50 200 A 150 150 0 0 1 350 200" />
       </defs>
       <text className="fill-seal" style={{ fontSize: 12, letterSpacing: '0.35em', fontWeight: 600 }}>
         <textPath href="#curve-top" startOffset="50%" textAnchor="middle">
           THE OPENCHARTS PROJECT
-        </textPath>
-      </text>
-      <text className="fill-seal" style={{ fontSize: 11, letterSpacing: '0.4em', fontWeight: 500 }}>
-        <textPath href="#curve-bot" startOffset="50%" textAnchor="middle">
-          ★  PATIENT  ACCESS  ★
         </textPath>
       </text>
     </svg>
