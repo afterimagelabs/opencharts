@@ -9,17 +9,14 @@ const cases = [
     href: 'https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html',
     source: 'HHS · Sept 2019 · Listed on the OCR Resolution Agreements page',
   },
-  {
-    provider: 'Korunda Medical',
-    where: 'Florida',
-    year: '2019',
-    amount: '$85,000',
-    summary:
-      'The second Right of Access settlement, three months after Bayfront. A patient asked the practice to send their records to a third party in a specific electronic format. The practice repeatedly failed to do so.',
-    href: 'https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html',
-    source: 'HHS · Dec 2019 · Listed on the OCR Resolution Agreements page',
-  },
 ];
+
+const pattern = {
+  title: 'And another 40+ since.',
+  body:
+    'Every published settlement under the Right of Access Initiative names the provider, the amount paid, and the corrective action plan they agreed to. Amounts have ranged from a few thousand dollars to well into six figures. The full list is on the HHS Resolution Agreements page.',
+  href: 'https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html',
+};
 
 export default function Penalties() {
   return (
@@ -43,10 +40,14 @@ export default function Penalties() {
             </p>
 
             <div className="mt-8 grid grid-cols-3 gap-px bg-ink/15 border hairline">
-              <Stat n="50+" label="Right of Access settlements published since 2019" />
-              <Stat n="$3.5K +" label="Smallest published penalty (HHS, 2020)" />
+              <Stat n="50+" label="Right of Access settlements published as of 2024" />
+              <Stat n="$3.5K +" label="Smallest published penalty under the initiative" />
               <Stat n="Public" label="Every case names a real provider on the OCR site" />
             </div>
+            <p className="mt-3 text-xs text-ink-muted leading-relaxed">
+              Counts and dollar ranges reflect the HHS Resolution Agreements page at the time this
+              site was last updated. The current running total is on the HHS site, linked below.
+            </p>
 
             <div className="mt-8 text-sm">
               <p className="text-ink-muted leading-relaxed">
@@ -121,6 +122,29 @@ export default function Penalties() {
                 </div>
               </a>
             ))}
+
+            <a
+              href={pattern.href}
+              target="_blank"
+              rel="noreferrer"
+              className="block group bg-paper-warm/40 border hairline p-7 hover:border-ink transition-colors"
+            >
+              <div className="flex items-baseline justify-between gap-4 flex-wrap">
+                <div className="font-serif text-2xl font-semibold leading-tight text-ink">
+                  {pattern.title}
+                </div>
+                <div className="font-mono text-xs text-ink-muted">2019 — present</div>
+              </div>
+              <p className="mt-4 text-ink-soft leading-relaxed text-[15px]">{pattern.body}</p>
+              <div className="mt-5 pt-4 border-t hairline flex items-center justify-between text-xs">
+                <span className="text-ink-muted uppercase tracking-[0.18em]">
+                  HHS · OCR Resolution Agreements
+                </span>
+                <span className="text-seal group-hover:underline underline-offset-4">
+                  Open the HHS list ↗
+                </span>
+              </div>
+            </a>
 
             <a
               href="https://www.hhs.gov/hipaa/for-professionals/compliance-enforcement/agreements/index.html"

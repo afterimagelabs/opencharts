@@ -63,23 +63,25 @@ export default function GetStarted() {
         </ol>
 
         <div className="mt-14 flex flex-wrap items-center gap-4">
-          <a
-            href="https://github.com/afterimagelabs/opencharts/releases/latest"
-            className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-paper rounded-sm font-medium hover:bg-seal transition-colors"
-          >
-            Download the toolkit
-            <span aria-hidden>↓</span>
-          </a>
+          <span className="inline-flex items-center gap-2 px-6 py-3.5 bg-paper-edge text-ink-muted rounded-sm font-medium cursor-not-allowed">
+            Toolkit coming soon
+            <span aria-hidden>·</span>
+            <span className="text-xs font-mono uppercase tracking-wider">in progress</span>
+          </span>
           <a
             href="https://github.com/afterimagelabs/opencharts"
             className="inline-flex items-center gap-2 px-6 py-3.5 border border-ink rounded-sm font-medium hover:bg-ink hover:text-paper transition-colors"
           >
-            View the source
+            Track progress on GitHub
           </a>
-          <span className="text-sm text-ink-muted">
-            All artifacts are MIT-licensed. Adapt them, translate them, share them.
-          </span>
         </div>
+
+        <p className="mt-6 text-sm text-ink-muted max-w-2xl leading-relaxed">
+          The artifacts above (the request letter, the audit log template, and the pre-filled OCR
+          complaint) are being drafted and reviewed. When they ship, they will be MIT-licensed and
+          downloadable from this page. Nothing on this site is legal advice; for your specific
+          situation, talk to an attorney.
+        </p>
       </div>
     </section>
   );

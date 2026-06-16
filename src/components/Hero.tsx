@@ -44,7 +44,7 @@ export default function Hero() {
                 href="#start"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-paper rounded-sm font-medium hover:bg-seal transition-colors"
               >
-                Get the toolkit
+                How it will work
                 <span aria-hidden>→</span>
               </a>
               <a
@@ -53,7 +53,9 @@ export default function Hero() {
               >
                 Read the law
               </a>
-              <span className="text-sm text-ink-muted ml-2">Free · No account · MIT licensed</span>
+              <span className="text-sm text-ink-muted ml-2">
+                Free · MIT licensed · Toolkit shipping soon
+              </span>
             </div>
           </div>
 

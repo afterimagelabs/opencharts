@@ -38,8 +38,9 @@ export default function WhyItMatters() {
             Why a delayed record is never just paperwork.
           </h2>
           <p className="mt-6 text-lg text-ink-soft leading-relaxed">
-            We hear from patients every week who lost something real to a slow records request.
-            Money. A court date. A treatment window. The losses cluster into a few familiar shapes.
+            A request that should have taken thirty days routinely takes ninety. The patient ends
+            up paying for the gap: money, a court date, a treatment window. The losses cluster
+            into a few familiar shapes.
           </p>
         </div>
 
