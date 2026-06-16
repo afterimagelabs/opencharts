@@ -35,18 +35,23 @@ export default function Penalties() {
               not getting their records on time.
             </p>
             <p className="mt-4 text-ink-soft leading-relaxed">
-              Every settlement is public. Each one names the provider, the amount paid, and the
-              years-long corrective action plan that follows. A small sample is on the right.
+              The $85,000 settlements below are at the low end, not a ceiling. Once a provider has
+              been notified of a violation and doesn't correct it, the per-violation floor jumps
+              from a few hundred dollars into the
+              <span className="font-semibold text-ink"> willful-neglect tier</span>, with
+              maximums above $2 million per category per year. Exposure scales fast.
             </p>
 
             <div className="mt-8 grid grid-cols-3 gap-px bg-ink/15 border hairline">
-              <Stat n="50+" label="Right of Access settlements published as of 2024" />
-              <Stat n="$3.5K +" label="Smallest published penalty under the initiative" />
-              <Stat n="Public" label="Every case names a real provider on the OCR site" />
+              <Stat n="$140M+" label="Cumulative HIPAA penalties collected by HHS OCR" />
+              <Stat n="$2.1M" label="Max per-violation-category penalty per year (Tier 4)" />
+              <Stat n="Public" label="Every case names a real provider, indexed by Google" />
             </div>
             <p className="mt-3 text-xs text-ink-muted leading-relaxed">
-              Counts and dollar ranges reflect the HHS Resolution Agreements page at the time this
-              site was last updated. The current running total is on the HHS site, linked below.
+              Cumulative penalty totals come from the HHS OCR enforcement summary. The four-tier
+              penalty structure (2024 inflation adjustment) runs from $137 per violation at the
+              lowest tier to $2,134,831 per violation category per year at Tier 4 (willful
+              neglect, not corrected). Current totals are on HHS, linked below.
             </p>
 
             <div className="mt-8 text-sm">
