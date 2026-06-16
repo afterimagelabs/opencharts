@@ -1,11 +1,11 @@
 const qs = [
   {
     q: 'Is OpenCharts a law firm? Is this legal advice?',
-    a: "No. OpenCharts is a public-interest project, not a law firm, and nothing here is legal advice. The HIPAA Privacy Rule is federal law that applies on its own — we just help you exercise the access right it already grants you. For your specific situation, talk to an attorney.",
+    a: "No. OpenCharts is a public-interest project, not a law firm, and nothing on this site is legal advice. The HIPAA Privacy Rule is federal law that applies on its own. We just help you exercise the access right it already grants you. For your specific situation, talk to an attorney.",
   },
   {
     q: 'Does this work outside the United States?',
-    a: "The 30-day deadline is a U.S. federal rule (45 CFR § 164.524). Most other countries have their own patient-access laws — Canada (PIPEDA), the UK and EU (GDPR Article 15), Australia (Privacy Act) — but the deadlines and complaint processes differ. We're collecting templates for other jurisdictions on GitHub; contributions welcome.",
+    a: "The 30-day deadline is a U.S. federal rule (45 CFR § 164.524). Most other countries have their own access laws: Canada (PIPEDA), the UK and EU (GDPR Article 15), Australia (Privacy Act). The deadlines and the complaint processes are different. We're collecting templates for other jurisdictions on GitHub; contributions welcome.",
   },
   {
     q: 'What if my provider says they need more than 30 days?',
@@ -13,7 +13,7 @@ const qs = [
   },
   {
     q: 'Can my provider charge me for the records?',
-    a: "They can charge a reasonable, cost-based fee — labor for copying, postage, the cost of the storage media — but not for searching or retrieving the records, and not a per-page fee that exceeds actual cost. HHS publishes the specific limits in its 2016 guidance.",
+    a: "They can charge a reasonable, cost-based fee. That covers labor for copying, postage, and the cost of the storage media. It does not cover searching or retrieving the records, and a per-page fee can't exceed actual cost. HHS published the specific limits in its 2016 guidance.",
   },
   {
     q: 'What format am I entitled to receive my records in?',
@@ -21,7 +21,7 @@ const qs = [
   },
   {
     q: 'Where does the OpenCharts project live, and who runs it?',
-    a: "OpenCharts is a small group of patient advocates, lawyers, and engineers. The code, the documents, and every change are on GitHub at afterimagelabs/opencharts. We don't take donations, sell anything, or run ads. If you want to help, the easiest path is a pull request.",
+    a: "OpenCharts is a small, volunteer project. The code, the documents, and every change are on GitHub at afterimagelabs/opencharts. We don't take donations, sell anything, or run ads. The easiest way to help is a pull request.",
   },
 ];
 
@@ -31,7 +31,7 @@ export default function FAQ() {
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 06</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 07</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
               Common questions.
             </h2>

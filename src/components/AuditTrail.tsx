@@ -61,14 +61,14 @@ export default function AuditTrail() {
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28 relative">
         <div className="grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-4">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-paper/50">§ 03</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-paper/50">§ 04</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
               The audit trail does the arguing for you.
             </h2>
             <p className="mt-6 text-paper/80 leading-relaxed">
-              On its own, "they're taking forever" doesn't go anywhere. A timestamped, sourced record
-              of every contact does. This is what a complete OpenCharts log looks like at the moment
-              the deadline expires.
+              On its own, "they're taking forever" goes nowhere. A timestamped record of every
+              contact, with delivery scans and call notes attached, goes a long way. Here is what
+              a complete OpenCharts log looks like at the moment the deadline expires.
             </p>
             <div className="mt-8 inline-flex items-center gap-3 text-xs uppercase tracking-[0.22em] text-paper/60">
               <span className="inline-block w-8 h-px bg-paper/30" />

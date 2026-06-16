@@ -4,7 +4,7 @@ const tools = [
     title: 'The Request',
     sub: 'A letter the law recognizes',
     body:
-      'A plain-language records request that cites 45 CFR § 164.524 directly, asks for delivery in your preferred format, and sets the 30-day clock. Printable, mailable, and tested against real provider responses.',
+      'A plain-language records request that cites 45 CFR § 164.524 directly, names the format you want delivery in, and starts the 30-day clock. Tested against real provider responses.',
     artifact: 'records-request.pdf',
   },
   {
@@ -12,7 +12,7 @@ const tools = [
     title: 'The Log',
     sub: 'Where every contact lives',
     body:
-      'A simple spreadsheet (Google Sheets, Excel, or CSV) with one row per contact: date, who, what was said, what was promised, what to follow up on. Pre-formatted for the OCR complaint exporter.',
+      'A simple spreadsheet (Google Sheets, Excel, or CSV) with one row per contact: date, who you spoke with, what they said, what they promised, what to follow up on. The columns line up with the OCR complaint exporter.',
     artifact: 'audit-log.xlsx',
   },
   {
@@ -31,13 +31,13 @@ export default function Toolkit() {
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="grid lg:grid-cols-12 gap-12">
           <div className="lg:col-span-5">
-            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 04</div>
+            <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 05</div>
             <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
               Three small artifacts. One enforceable timeline.
             </h2>
             <p className="mt-6 text-ink-soft leading-relaxed">
-              OpenCharts isn't software you sign up for. It's a small set of documents — a request, a
-              log, a complaint — designed so each one feeds the next. Free, MIT-licensed, no account.
+              OpenCharts isn't software you sign up for. It's a small set of documents (a request,
+              a log, a complaint) designed so each feeds the next. Free, MIT-licensed, no account.
             </p>
             <p className="mt-4 text-sm text-ink-muted">
               Everything is in the public repository. Translations, corrections, and additions are

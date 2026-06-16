@@ -3,7 +3,7 @@ const steps = [
     day: 'Day 0',
     title: 'Send the request',
     body:
-      'Download the OpenCharts request letter, fill in your provider and date of birth, and mail it certified. Keep the green slip — that scan is your Day-0 timestamp.',
+      'Download the OpenCharts request letter, fill in your provider and date of birth, and mail it certified. Keep the green slip. That scan is your Day-0 timestamp.',
     cmd: '$ download records-request.pdf',
   },
   {
@@ -15,7 +15,7 @@ const steps = [
   },
   {
     day: 'Day 30',
-    title: 'Check for the records — or the extension',
+    title: 'Check for the records, or the extension',
     body:
       'If the records arrived, you\'re done. If a written extension arrived, log it. If neither arrived, you\'re in the OCR-complaint window.',
     cmd: '$ status --check',
@@ -34,7 +34,7 @@ export default function GetStarted() {
     <section id="start" className="border-b hairline bg-paper-warm/30 relative">
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="max-w-3xl">
-          <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 05</div>
+          <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 06</div>
           <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
             Start in under ten minutes.
           </h2>

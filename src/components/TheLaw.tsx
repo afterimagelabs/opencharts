@@ -10,8 +10,8 @@ export default function TheLaw() {
             </h2>
             <p className="mt-6 text-ink-soft leading-relaxed">
               The HIPAA Privacy Rule is enforced by the U.S. Department of Health and Human Services'
-              Office for Civil Rights. The 30-day deadline isn't a guideline — it's the rule. The full
-              citation is below; the plain-English version is to the right.
+              Office for Civil Rights. The 30-day deadline isn't a guideline. It's the rule. The full
+              citation is below; the plain English version is to the right.
             </p>
           </div>
 
@@ -48,7 +48,7 @@ export default function TheLaw() {
               <PlainFact
                 label="One extension allowed"
                 value="+30 days"
-                detail="They must notify you in writing during the first 30 days. Extensions are once-only."
+                detail="They must notify you in writing within the first 30 days. The extension is one-time only."
               />
               <PlainFact
                 label="If they miss it"

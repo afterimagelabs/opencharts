@@ -2,11 +2,11 @@
 
 > Hold your providers to the 30-day rule.
 
-OpenCharts is a free, open-source toolkit to help patients in the United States exercise their HIPAA right of access — and document every step when providers stall past the 30-day deadline.
+OpenCharts is a free, open-source toolkit to help patients in the United States exercise their HIPAA right of access, and to document every step when providers stall past the 30-day deadline.
 
 Under the [HIPAA Privacy Rule](https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-E/section-164.524) (45 CFR § 164.524), every patient has the right to receive their own medical records within 30 days of asking. When they don't, an audit trail is what makes the right enforceable.
 
-This repository hosts the project website ([opencharts.org](https://opencharts.org)) and, over time, the artifacts themselves — the request letter, the audit log template, and the pre-filled HHS OCR complaint.
+This repository hosts the project website ([opencharts.org](https://opencharts.org)). Over time it will also host the artifacts: the request letter, the audit log template, and the pre-filled HHS OCR complaint.
 
 ## Status
 
@@ -34,7 +34,7 @@ The site deploys to Cloudflare Pages on every push to `main`.
 
 ## Contributing
 
-Issues, pull requests, and translations are welcome. The legal-research issues are tagged `law`, the content issues are tagged `content`, and the design issues are tagged `design`.
+Issues, pull requests, and translations are welcome. Legal-research issues are tagged `law`, content issues `content`, design issues `design`.
 
 ## Disclaimer
 

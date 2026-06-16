@@ -13,7 +13,7 @@ export default function Header() {
         </a>
         <nav className="hidden md:flex items-center gap-7 text-sm">
           <a href="#the-law" className="hover:text-seal transition-colors">The law</a>
-          <a href="#why" className="hover:text-seal transition-colors">Why it matters</a>
+          <a href="#penalties" className="hover:text-seal transition-colors">Penalties</a>
           <a href="#toolkit" className="hover:text-seal transition-colors">The toolkit</a>
           <a href="#start" className="hover:text-seal transition-colors">Get started</a>
           <a

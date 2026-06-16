@@ -1,6 +1,7 @@
 import Header from './components/Header';
 import Hero from './components/Hero';
 import TheLaw from './components/TheLaw';
+import Penalties from './components/Penalties';
 import WhyItMatters from './components/WhyItMatters';
 import AuditTrail from './components/AuditTrail';
 import Toolkit from './components/Toolkit';
@@ -15,6 +16,7 @@ export default function App() {
       <main>
         <Hero />
         <TheLaw />
+        <Penalties />
         <WhyItMatters />
         <AuditTrail />
         <Toolkit />

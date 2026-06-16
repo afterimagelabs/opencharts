@@ -1,27 +1,30 @@
 const cases = [
   {
     n: '01',
-    title: 'Insurance & disability claims',
+    title: 'Insurance and disability claims',
     body:
-      'Disability, long-term care, and life insurance carriers often deny claims for "insufficient documentation" while the provider sits on the file. A dated audit trail shows whose hands the records were stuck in.',
-    stat: '1 in 4',
-    statLabel: 'Disability claims initially denied for missing medical records (CCD survey, 2023)',
+      'Disability and life insurance carriers regularly deny claims citing "insufficient documentation" while the provider is the one sitting on the file. A dated log of every contact shows whose hands the records were actually stuck in.',
+    stat: 'Common',
+    statLabel:
+      'Initial denials based on missing or late records are a known pattern in disability and long-term care claims.',
   },
   {
     n: '02',
-    title: 'Second opinions & switching providers',
+    title: 'Second opinions and switching providers',
     body:
-      'When you change doctors mid-treatment, a delay of weeks can mean repeated imaging, restarted labs, and lost continuity. Records the new provider should have at intake instead arrive after the first visit.',
-    stat: '37 days',
-    statLabel: 'Median delay reported by patients changing oncologists in a 2022 ASCO patient survey',
+      'When you change doctors mid-treatment, a delay of weeks usually means repeat imaging, re-drawn labs, and a first visit with the new provider that should have started with the chart in hand.',
+    stat: 'Weeks',
+    statLabel:
+      'The records that should arrive at intake often arrive after the first appointment.',
   },
   {
     n: '03',
-    title: 'Legal claims & informed consent',
+    title: 'Legal claims and informed consent',
     body:
-      'For medical malpractice claims, the statute of limitations runs whether or not you have the records. A documented request — and a documented refusal — is often the first piece of evidence an attorney asks for.',
+      'For medical malpractice claims, the statute of limitations runs whether or not you have the records. A documented request, and a documented refusal, is often the first piece of evidence an attorney asks for.',
     stat: '2–3 yrs',
-    statLabel: 'Typical statute of limitations on a medical malpractice claim in most U.S. states',
+    statLabel:
+      'Typical statute of limitations on a medical malpractice claim in most U.S. states.',
   },
 ];
 
@@ -30,14 +33,13 @@ export default function WhyItMatters() {
     <section id="why" className="border-b hairline">
       <div className="mx-auto max-w-6xl px-6 py-20 lg:py-28">
         <div className="max-w-3xl">
-          <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 02</div>
+          <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">§ 03</div>
           <h2 className="font-serif text-4xl lg:text-5xl mt-3 leading-tight tracking-tight font-semibold">
             Why a delayed record is never just paperwork.
           </h2>
           <p className="mt-6 text-lg text-ink-soft leading-relaxed">
-            We hear from patients every week who lost something concrete — money, time, a court date,
-            a treatment window — because a request that should have taken thirty days took ninety.
-            Three of the most common shapes that takes:
+            We hear from patients every week who lost something real to a slow records request.
+            Money. A court date. A treatment window. The losses cluster into a few familiar shapes.
           </p>
         </div>
 
