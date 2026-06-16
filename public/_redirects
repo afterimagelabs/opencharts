@@ -1,0 +1,8 @@
+# Cloudflare Pages routing rules.
+
+# /api/* is handled by Pages Functions (see functions/api/...).
+
+# Every other unmatched path falls through to the SPA. Anything matching
+# /request/<hash> is handled by the React entry which inspects
+# window.location.pathname.
+/request/*  /index.html  200
