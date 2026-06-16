@@ -49,6 +49,18 @@ export default function Toolkit() {
           </div>
 
           <div className="lg:col-span-7 space-y-5">
+            <div className="bg-paper-warm/40 border hairline px-5 py-4 flex flex-wrap items-center gap-3 text-sm text-ink-soft">
+              <span>Did one of these help you, or could it be better?</span>
+              <a
+                href="https://github.com/afterimagelabs/opencharts/discussions/new?category=feedback"
+                target="_blank"
+                rel="noreferrer"
+                className="text-seal hover:underline underline-offset-4 font-medium whitespace-nowrap"
+              >
+                Tell us on GitHub Discussions ↗
+              </a>
+            </div>
+
             {tools.map((t) => (
               <a
                 key={t.n}
