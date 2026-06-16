@@ -17,14 +17,24 @@ export default function Footer() {
               A free, open-source toolkit to help patients exercise their HIPAA right of access and
               hold providers to the 30-day deadline. Nothing on this site is legal advice.
             </p>
+            <p className="mt-4 text-paper/55 text-xs">
+              Maintained by the OpenCharts maintainers · source on{' '}
+              <a
+                href="https://github.com/afterimagelabs/opencharts"
+                className="underline underline-offset-4 hover:text-paper"
+              >
+                GitHub
+              </a>
+            </p>
           </div>
 
           <div className="md:col-span-2">
             <div className="text-[10px] uppercase tracking-[0.22em] text-paper/50">Project</div>
             <ul className="mt-4 space-y-2 text-sm">
               <li><a className="hover:text-paper/100 text-paper/80" href="#the-law">The law</a></li>
-              <li><a className="hover:text-paper/100 text-paper/80" href="#toolkit">Toolkit</a></li>
+              <li><a className="hover:text-paper/100 text-paper/80" href="#penalties">Penalties</a></li>
               <li><a className="hover:text-paper/100 text-paper/80" href="#start">Get started</a></li>
+              <li><a className="hover:text-paper/100 text-paper/80" href="#about">About</a></li>
               <li><a className="hover:text-paper/100 text-paper/80" href="https://github.com/afterimagelabs/opencharts">GitHub</a></li>
             </ul>
           </div>

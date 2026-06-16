@@ -8,6 +8,7 @@ import AuditTrail from './components/AuditTrail';
 import Toolkit from './components/Toolkit';
 import GetStarted from './components/GetStarted';
 import FAQ from './components/FAQ';
+import About from './components/About';
 import Footer from './components/Footer';
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         <Toolkit />
         <GetStarted />
         <FAQ />
+        <About />
       </main>
       <Footer />
     </div>
