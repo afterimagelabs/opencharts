@@ -4,24 +4,27 @@ const tools = [
     title: 'The Request',
     sub: 'A letter the law recognizes',
     body:
-      'A plain-language records request that cites 45 CFR § 164.524 directly, names the format you want delivery in, and starts the 30-day clock. Tested against real provider responses.',
+      'A plain-language records request that cites 45 CFR § 164.524 directly, names the format you want delivery in, and starts the 30-day clock. Fill in the blanks, sign, mail certified.',
     artifact: 'records-request.pdf',
+    href: '/toolkit/records-request.pdf',
   },
   {
     n: '02',
     title: 'The Log',
     sub: 'Where every contact lives',
     body:
-      'A simple spreadsheet (Google Sheets, Excel, or CSV) with one row per contact: date, who you spoke with, what they said, what they promised, what to follow up on. The columns line up with the OCR complaint exporter.',
-    artifact: 'audit-log.xlsx',
+      'A simple CSV with one row per contact: day, date, time, type, who you spoke with, what they said, what they promised, the next follow-up. Open it in Google Sheets, Excel, or Numbers.',
+    artifact: 'audit-log.csv',
+    href: '/toolkit/audit-log.csv',
   },
   {
     n: '03',
     title: 'The Complaint',
-    sub: 'Ready to file with HHS',
+    sub: 'A guide to the HHS OCR form',
     body:
-      'A pre-filled OCR Health Information Privacy Complaint form. If you reach Day 31 with no records and no written extension, you take the log, fill in three fields, and submit. The complaint is filed in under five minutes.',
-    artifact: 'ocr-complaint.pdf',
+      'A short guide that tells you exactly what to have ready before you open the HHS OCR online complaint form, including a paste-ready summary template. Most patients finish the form in under ten minutes.',
+    artifact: 'ocr-complaint-guide.pdf',
+    href: '/toolkit/ocr-complaint-guide.pdf',
   },
 ];
 
@@ -47,9 +50,11 @@ export default function Toolkit() {
 
           <div className="lg:col-span-7 space-y-5">
             {tools.map((t) => (
-              <article
+              <a
                 key={t.n}
-                className="group bg-paper border hairline p-7 hover:border-ink transition-colors"
+                href={t.href}
+                download
+                className="group block bg-paper border hairline p-7 hover:border-ink transition-colors"
               >
                 <div className="flex items-start gap-6">
                   <div className="font-serif text-4xl text-seal/80 leading-none pt-1">{t.n}</div>
@@ -62,9 +67,17 @@ export default function Toolkit() {
                     </div>
                     <div className="text-sm text-ink-muted mt-1 italic font-serif">{t.sub}</div>
                     <p className="mt-4 text-ink-soft leading-relaxed">{t.body}</p>
+                    <div className="mt-5 pt-4 border-t hairline flex items-center justify-between text-xs">
+                      <span className="text-ink-muted uppercase tracking-[0.18em]">
+                        Free · MIT licensed
+                      </span>
+                      <span className="text-seal group-hover:underline underline-offset-4 font-medium">
+                        Download ↓
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </article>
+              </a>
             ))}
           </div>
         </div>

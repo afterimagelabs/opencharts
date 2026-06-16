@@ -41,10 +41,10 @@ export default function Hero() {
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
-                href="#start"
+                href="#toolkit"
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-paper rounded-sm font-medium hover:bg-seal transition-colors"
               >
-                How it will work
+                Get the toolkit
                 <span aria-hidden>→</span>
               </a>
               <a
@@ -53,9 +53,7 @@ export default function Hero() {
               >
                 Read the law
               </a>
-              <span className="text-sm text-ink-muted ml-2">
-                Free · MIT licensed · Toolkit shipping soon
-              </span>
+              <span className="text-sm text-ink-muted ml-2">Free · MIT licensed · No account</span>
             </div>
           </div>
 

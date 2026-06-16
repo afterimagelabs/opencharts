@@ -62,25 +62,33 @@ export default function GetStarted() {
           ))}
         </ol>
 
-        <div className="mt-14 flex flex-wrap items-center gap-4">
-          <span className="inline-flex items-center gap-2 px-6 py-3.5 bg-paper-edge text-ink-muted rounded-sm font-medium cursor-not-allowed">
-            Toolkit coming soon
-            <span aria-hidden>·</span>
-            <span className="text-xs font-mono uppercase tracking-wider">in progress</span>
-          </span>
+        <div className="mt-14 flex flex-wrap items-center gap-3">
           <a
-            href="https://github.com/afterimagelabs/opencharts"
-            className="inline-flex items-center gap-2 px-6 py-3.5 border border-ink rounded-sm font-medium hover:bg-ink hover:text-paper transition-colors"
+            href="/toolkit/records-request.pdf"
+            download
+            className="inline-flex items-center gap-2 px-5 py-3 bg-ink text-paper rounded-sm font-medium hover:bg-seal transition-colors"
           >
-            Track progress on GitHub
+            Request letter (PDF) <span aria-hidden>↓</span>
+          </a>
+          <a
+            href="/toolkit/audit-log.csv"
+            download
+            className="inline-flex items-center gap-2 px-5 py-3 border border-ink rounded-sm font-medium hover:bg-ink hover:text-paper transition-colors"
+          >
+            Audit log (CSV) <span aria-hidden>↓</span>
+          </a>
+          <a
+            href="/toolkit/ocr-complaint-guide.pdf"
+            download
+            className="inline-flex items-center gap-2 px-5 py-3 border border-ink rounded-sm font-medium hover:bg-ink hover:text-paper transition-colors"
+          >
+            OCR complaint guide (PDF) <span aria-hidden>↓</span>
           </a>
         </div>
 
         <p className="mt-6 text-sm text-ink-muted max-w-2xl leading-relaxed">
-          The artifacts above (the request letter, the audit log template, and the pre-filled OCR
-          complaint) are being drafted and reviewed. When they ship, they will be MIT-licensed and
-          downloadable from this page. Nothing on this site is legal advice; for your specific
-          situation, talk to an attorney.
+          All three are MIT-licensed; adapt them, translate them, share them. Nothing in them is
+          legal advice. For your specific situation, talk to an attorney.
         </p>
       </div>
     </section>
