@@ -103,10 +103,16 @@ function CurvedText() {
     >
       <defs>
         <path id="curve-top" d="M 50 200 A 150 150 0 0 1 350 200" />
+        <path id="curve-bot" d="M 20 200 A 180 180 0 0 0 380 200" />
       </defs>
       <text className="fill-seal" style={{ fontSize: 12, letterSpacing: '0.35em', fontWeight: 600 }}>
         <textPath href="#curve-top" startOffset="50%" textAnchor="middle">
           THE OPENCHARTS PROJECT
+        </textPath>
+      </text>
+      <text className="fill-seal" style={{ fontSize: 11, letterSpacing: '0.4em', fontWeight: 500 }}>
+        <textPath href="#curve-bot" startOffset="50%" textAnchor="middle">
+          ★  PATIENT  ACCESS  ★
         </textPath>
       </text>
     </svg>
