@@ -6,6 +6,7 @@ type Event = { at: string; type: EventType; content?: string };
 
 type TrackingPayload = {
   hash: string;
+  provider_name: string | null;
   initial_request_at: string | null;
   initial_channel: ContactChannel | null;
   deadline: string | null;
@@ -162,6 +163,17 @@ function Timeline({ data }: { data: TrackingPayload }) {
         </div>
         <StatusPill tone={status.tone}>{status.label}</StatusPill>
       </div>
+
+      {data.provider_name && (
+        <div className="mt-4 mb-2">
+          <div className="text-[10px] uppercase tracking-[0.22em] text-ink-muted">
+            Records request to
+          </div>
+          <div className="font-serif text-2xl mt-1 font-semibold text-ink leading-tight">
+            {data.provider_name}
+          </div>
+        </div>
+      )}
 
       {notYetSent ? (
         <p className="mt-6 text-ink-soft leading-relaxed">
