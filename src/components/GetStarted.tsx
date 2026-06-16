@@ -3,29 +3,29 @@ const steps = [
     day: 'Day 0',
     title: 'Send the request',
     body:
-      'Download the OpenCharts request letter, fill in your provider and date of birth, and mail it certified. Keep the green slip. That scan is your Day-0 timestamp.',
-    cmd: '$ download records-request.pdf',
+      'Download the request letter PDF. Fill in your provider and date of birth, sign it, and mail it certified. Keep the green slip — that scan is your Day-0 timestamp.',
+    action: 'Mail it certified',
   },
   {
     day: 'Days 1–29',
     title: 'Log every contact',
     body:
-      'Each time you phone, email, or hear from the provider, add a row to the audit log. One row per contact, in plain English. No legalese needed.',
-    cmd: '$ open audit-log.xlsx',
+      'Phone, email, or hear back from the provider? Add a row to the audit log. One row per contact, in plain English. No legalese needed.',
+    action: 'Open the audit log',
   },
   {
     day: 'Day 30',
-    title: 'Check for the records, or the extension',
+    title: 'Check the mail',
     body:
-      'If the records arrived, you\'re done. If a written extension arrived, log it. If neither arrived, you\'re in the OCR-complaint window.',
-    cmd: '$ status --check',
+      "If the records arrived, you're done. If a written extension arrived, log it. If neither arrived, you're in the OCR-complaint window.",
+    action: 'Open your mail',
   },
   {
     day: 'Day 31+',
     title: 'File the complaint',
     body:
-      'Export the audit log, paste the summary into the pre-filled OCR complaint, and submit. The full timeline goes in as your evidence attachment.',
-    cmd: '$ submit ocr-complaint.pdf',
+      "Paste the audit log into the pre-filled OCR complaint and submit. The full timeline goes in as your evidence attachment.",
+    action: 'Submit the complaint',
   },
 ];
 
@@ -39,8 +39,9 @@ export default function GetStarted() {
             Start in under ten minutes.
           </h2>
           <p className="mt-6 text-lg text-ink-soft leading-relaxed">
-            The whole process is four steps over four to five weeks. Most of it is waiting. The
-            mechanical work happens on two days.
+            Four steps over four to five weeks. Most of it is waiting. The real work
+            happens on two days: the day you mail the request, and the day you file the
+            complaint if the records never came.
           </p>
         </div>
 
@@ -55,8 +56,9 @@ export default function GetStarted() {
               </div>
               <h3 className="font-serif text-2xl mt-4 leading-tight font-semibold">{s.title}</h3>
               <p className="mt-3 text-ink-soft leading-relaxed flex-1">{s.body}</p>
-              <div className="mt-5 font-mono text-xs text-ink-soft bg-ink/5 border hairline px-3 py-2 rounded-sm">
-                {s.cmd}
+              <div className="mt-5 inline-flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-ink-muted">
+                <span aria-hidden className="inline-block w-6 h-px bg-ink/30" />
+                {s.action}
               </div>
             </li>
           ))}
