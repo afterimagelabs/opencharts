@@ -1,8 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
 
-type EventType = 'call' | 'fax' | 'email' | 'records_received' | 'note_added';
+type EventType =
+  | 'call'
+  | 'fax'
+  | 'email'
+  | 'records_received'
+  | 'records_incomplete'
+  | 'note_added';
 type ContactChannel = 'call' | 'fax' | 'email';
-type Event = { at: string; type: EventType; content?: string };
+type Event = {
+  at: string;
+  type: EventType;
+  content?: string;
+  // Only set for records_received events. True when ops flagged the
+  // returned records as incomplete (partial, missing date ranges, etc.).
+  incomplete?: boolean;
+};
 
 type TrackingPayload = {
   hash: string;
@@ -201,19 +214,26 @@ function Timeline({ data }: { data: TrackingPayload }) {
               sub={fmtTime(data.deadline!)}
             />
           )}
-          <Stat
-            label={data.records_received ? 'Days to receipt' : 'Days open'}
-            value={String(data.days_open)}
-            sub={
-              data.records_received
-                ? data.days_open! <= 30
+          {data.records_received ? (
+            <Stat
+              label="Days to receipt"
+              value={String(data.days_open)}
+              sub={
+                data.days_open! <= 30
                   ? `${30 - data.days_open!} under deadline`
                   : `${data.days_open! - 30} past deadline`
-                : data.deadline_passed
-                  ? `${data.days_open! - 30} past deadline`
-                  : `${30 - data.days_open!} remaining`
-            }
-          />
+              }
+            />
+          ) : data.deadline_passed ? (
+            <Stat
+              label="Days open"
+              value={String(data.days_open)}
+              sub={`${data.days_open! - 30} past deadline`}
+              tone="seal"
+            />
+          ) : (
+            <Countdown deadlineIso={data.deadline!} />
+          )}
         </div>
       )}
 
@@ -231,11 +251,44 @@ function Timeline({ data }: { data: TrackingPayload }) {
         <div className="divide-y hairline">
           {(() => {
             const firstOutboundIdx = data.events.findIndex(
-              (e) => e.type !== 'records_received' && e.type !== 'note_added',
+              (e) =>
+                e.type !== 'records_received' &&
+                e.type !== 'records_incomplete' &&
+                e.type !== 'note_added',
             );
-            return data.events.map((event, i) => (
-              <Row key={i} event={event} isFirst={i === firstOutboundIdx} />
-            ));
+
+            // Splice in a synthetic "30-day deadline reached" milestone
+            // row at the position the deadline timestamp falls in. The
+            // milestone is only meaningful if we have an initial request
+            // and the deadline timestamp itself is in the past (or in
+            // the past relative to a later event).
+            const rendered: React.ReactNode[] = [];
+            const deadlineAt = data.deadline ? new Date(data.deadline) : null;
+            const now = new Date();
+            const showMilestone =
+              !!deadlineAt &&
+              now >= deadlineAt &&
+              data.initial_request_at !== null;
+            let milestoneInserted = false;
+
+            data.events.forEach((event, i) => {
+              if (
+                showMilestone &&
+                !milestoneInserted &&
+                deadlineAt &&
+                new Date(event.at) > deadlineAt
+              ) {
+                rendered.push(<MilestoneRow key={`milestone`} at={data.deadline!} />);
+                milestoneInserted = true;
+              }
+              rendered.push(<Row key={i} event={event} isFirst={i === firstOutboundIdx} />);
+            });
+            // If the deadline is past every existing event, the milestone
+            // belongs at the end of the timeline.
+            if (showMilestone && !milestoneInserted) {
+              rendered.push(<MilestoneRow key={`milestone`} at={data.deadline!} />);
+            }
+            return rendered;
           })()}
         </div>
       </div>
@@ -251,19 +304,32 @@ function Timeline({ data }: { data: TrackingPayload }) {
 }
 
 function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
-  let label: string;
+  let label: React.ReactNode;
   let accent: string;
   if (event.type === 'records_received') {
-    label = 'Records received';
-    accent = 'text-moss font-semibold';
+    if (event.incomplete) {
+      label = (
+        <>
+          Records received{' '}
+          <span className="text-seal font-semibold">· flagged incomplete</span>
+        </>
+      );
+      accent = 'text-moss font-semibold';
+    } else {
+      label = 'Records received';
+      accent = 'text-moss font-semibold';
+    }
+  } else if (event.type === 'records_incomplete') {
+    label = 'Records flagged incomplete';
+    accent = 'text-seal font-semibold';
   } else if (event.type === 'note_added') {
     label = 'Internal note';
     accent = 'text-ink-muted italic';
   } else if (isFirst) {
-    label = `Records request sent · ${channelLabel(event.type)}`;
+    label = `Records request sent · ${channelLabel(event.type as ContactChannel)}`;
     accent = 'text-seal font-semibold';
   } else {
-    label = followUpLabelFor(event.type);
+    label = followUpLabelFor(event.type as ContactChannel);
     accent = 'text-ink';
   }
   return (
@@ -310,14 +376,91 @@ function Panel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
+function Stat({
+  label,
+  value,
+  sub,
+  tone = 'ink',
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  tone?: 'ink' | 'seal';
+}) {
+  const valueCls =
+    tone === 'seal'
+      ? 'text-seal font-serif text-xl lg:text-2xl mt-2 font-semibold leading-tight'
+      : 'text-ink font-serif text-xl lg:text-2xl mt-2 font-semibold leading-tight';
   return (
     <div className="bg-paper p-5">
       <div className="text-[10px] uppercase tracking-[0.22em] text-ink-muted">{label}</div>
-      <div className="font-serif text-xl lg:text-2xl mt-2 font-semibold text-ink leading-tight">
-        {value}
-      </div>
+      <div className={valueCls}>{value}</div>
       <div className="mt-1 text-[11px] text-ink-muted font-mono">{sub}</div>
+    </div>
+  );
+}
+
+function Countdown({ deadlineIso }: { deadlineIso: string }) {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(id);
+  }, []);
+  const deadline = useMemo(() => new Date(deadlineIso), [deadlineIso]);
+  const msLeft = Math.max(0, deadline.getTime() - now.getTime());
+  const seconds = Math.floor(msLeft / 1000) % 60;
+  const minutes = Math.floor(msLeft / (1000 * 60)) % 60;
+  const hours = Math.floor(msLeft / (1000 * 60 * 60)) % 24;
+  const days = Math.floor(msLeft / (1000 * 60 * 60 * 24));
+
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  return (
+    <div className="bg-paper p-5">
+      <div className="text-[10px] uppercase tracking-[0.22em] text-ink-muted">
+        Time until deadline
+      </div>
+      <div className="font-serif text-xl lg:text-2xl mt-2 font-semibold text-ink leading-tight tabular-nums">
+        {days}
+        <span className="text-ink-muted text-[11px] font-sans font-normal uppercase tracking-[0.18em] ml-1.5">
+          d
+        </span>{' '}
+        {pad(hours)}
+        <span className="text-ink-muted text-[11px] font-sans font-normal uppercase tracking-[0.18em] ml-1">
+          h
+        </span>{' '}
+        {pad(minutes)}
+        <span className="text-ink-muted text-[11px] font-sans font-normal uppercase tracking-[0.18em] ml-1">
+          m
+        </span>{' '}
+        <span className="text-base text-ink-muted tabular-nums">{pad(seconds)}</span>
+        <span className="text-ink-muted text-[11px] font-sans font-normal uppercase tracking-[0.18em] ml-0.5">
+          s
+        </span>
+      </div>
+      <div className="mt-1 text-[11px] text-ink-muted font-mono">
+        until 30-day mark
+      </div>
+    </div>
+  );
+}
+
+function MilestoneRow({ at }: { at: string }) {
+  return (
+    <div className="bg-seal/10 border-l-4 border-l-seal px-4 sm:px-5 py-3">
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="font-semibold text-seal uppercase tracking-[0.12em] text-[11px] sm:text-[12px]">
+          ⚑ 30-day deadline reached
+        </span>
+        <span className="text-ink-muted text-[11px] font-mono">
+          {fmtDate(at)} · {fmtTime(at)}
+        </span>
+      </div>
+      <div className="mt-1 text-[11px] sm:text-[12px] text-ink-soft">
+        45 CFR § 164.524(b)(2)(i). After this point, the provider is out of
+        compliance unless a written extension notice was received during the
+        first 30 days.
+      </div>
     </div>
   );
 }
