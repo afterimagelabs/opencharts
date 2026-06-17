@@ -7,7 +7,7 @@ export default function Hero() {
           <div className="lg:col-span-7">
             <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em] text-ink-muted mb-8">
               <span className="inline-block w-8 h-px bg-ink" />
-              <span>A free, open-source toolkit</span>
+              <span>A free, open-source records-request service</span>
             </div>
 
             <h1 className="font-serif text-[36px] sm:text-5xl lg:text-7xl leading-[1.05] sm:leading-[1.02] tracking-tight font-semibold">
