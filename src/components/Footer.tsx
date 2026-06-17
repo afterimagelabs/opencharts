@@ -14,8 +14,9 @@ export default function Footer() {
               </div>
             </div>
             <p className="mt-6 text-paper/70 leading-relaxed text-sm max-w-md">
-              A free, open-source toolkit to help patients exercise their HIPAA right of access and
-              hold providers to the 30-day deadline. Nothing on this site is legal advice.
+              A free, open-source records-request service to help patients exercise their HIPAA
+              right of access and hold providers to the 30-day deadline. Nothing on this site is
+              legal advice.
             </p>
             <p className="mt-4 text-paper/55 text-xs">
               Maintained by the OpenCharts maintainers · source on{' '}
