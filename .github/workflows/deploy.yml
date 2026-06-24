@@ -2,7 +2,7 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, production-ezra]
   workflow_dispatch:
 
 jobs:
@@ -33,4 +33,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=opencharts --branch=main
+          command: pages deploy dist --project-name=opencharts --branch=${{ github.ref_name }}
