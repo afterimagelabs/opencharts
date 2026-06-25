@@ -22,13 +22,30 @@ interface CreateRequestBody {
 const MAX_LIST_LIMIT = 100;
 const DEFAULT_LIST_LIMIT = 25;
 
-function webhookUrls(baseUrl: string, hash: string) {
+// Per-tenant webhook endpoints are stable across all of a tenant's
+// requests; the hash is extracted from each provider's payload at
+// receive time. Tenants set the secret in the header / `?s=` once and
+// configure these URLs in each provider's webhook settings.
+function webhookEndpoints(baseUrl: string) {
   return {
-    gmail: `${baseUrl}/api/webhooks/gmail?hash=${hash}`,
-    humblefax: `${baseUrl}/api/webhooks/humblefax?hash=${hash}`,
-    humblefax_inbound: `${baseUrl}/api/webhooks/humblefax/inbound?hash=${hash}`,
-    twilio: `${baseUrl}/api/webhooks/twilio?hash=${hash}`,
-    mailgun: `${baseUrl}/api/webhooks/mailgun?hash=${hash}`,
+    humblefax_sent: `${baseUrl}/api/webhooks/humblefax`,
+    humblefax_inbound: `${baseUrl}/api/webhooks/humblefax/inbound`,
+    twilio: `${baseUrl}/api/webhooks/twilio`,
+    mailgun_sent: `${baseUrl}/api/webhooks/mailgun`,
+    mailgun_inbound: `${baseUrl}/api/webhooks/mailgun/inbound`,
+    gmail: `${baseUrl}/api/webhooks/gmail`,
+  };
+}
+
+// Per-request: tell the tenant exactly what to embed in each
+// provider's outbound message so the inbound webhook can route the
+// event back to THIS request.
+function embedHashRecipes(hash: string) {
+  return {
+    humblefax_reference_id: `oc:${hash}`,
+    twilio_custom_parameter: { name: 'oc_hash', value: hash },
+    mailgun_variable: { name: 'v:oc_hash', value: hash },
+    email_reply_to_token: `records+${hash}@<your_inbound_domain>`,
   };
 }
 
@@ -83,7 +100,8 @@ export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request
       patient_ref: data.patient_ref,
       created_at: data.created_at,
       public_url: `${baseUrl}/request/${data.public_tracking_hash}`,
-      webhook_urls: webhookUrls(baseUrl, data.public_tracking_hash),
+      embed_hash: embedHashRecipes(data.public_tracking_hash),
+      webhook_endpoints: webhookEndpoints(baseUrl),
     },
     { status: 201 },
   );
