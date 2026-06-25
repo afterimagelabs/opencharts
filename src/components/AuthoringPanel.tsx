@@ -1,26 +1,19 @@
 // Magic-link sign-in + note authoring UI for tenant members.
 //
-// Renders nothing when:
-//   - VITE_SUPABASE_URL/KEY aren't configured (the SPA isn't wired
-//     up to the new project, e.g. on the production-ezra build), or
-//   - the visitor isn't signed in and hasn't asked to sign in.
-//
-// When signed in AND the user's tenant owns this request, the visitor
-// can add a note. (The per-event incomplete toggle lives on the
-// timeline rows themselves and is wired in TrackingPage.)
+// Wraps the shared `useMembership` hook (same flow used by the
+// dashboard) and layers the per-request access check + note-author
+// form on top. Renders nothing when the SPA isn't configured for
+// Supabase, so it's safe to mount on every request page.
 
 import { useEffect, useState } from 'react';
-import type { Session, SupabaseClient } from '@supabase/supabase-js';
-import { getBrowserSupabase } from '../lib/supabase';
-import { addNote, canAuthorOnRequest, claimMembership, loadMembership } from '../lib/authoring';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { useMembership } from '../lib/useMembership';
+import { addNote, canAuthorOnRequest } from '../lib/authoring';
 
-type AuthState =
-  | { kind: 'disabled' }                     // env vars not set
-  | { kind: 'signed_out' }
-  | { kind: 'sent_link'; email: string }
-  | { kind: 'claiming' }
-  | { kind: 'signed_in_no_access' }
-  | { kind: 'signed_in'; tenant_user_id: string; request_id: string };
+type AccessState =
+  | { kind: 'checking' }
+  | { kind: 'no_access' }
+  | { kind: 'ready'; request_id: string };
 
 export default function AuthoringPanel({
   hash,
@@ -31,79 +24,66 @@ export default function AuthoringPanel({
   onChange: () => void;
   // Surfaces signed-in authoring state up to TrackingPage so timeline
   // rows can render per-event controls (e.g. the incomplete toggle).
-  // Called with `null` whenever the visitor leaves the `signed_in`
-  // state.
+  // Called with `null` whenever the visitor isn't actively authorized
+  // on THIS request.
   onAuthoringChange?: (state: { requestId: string; tenantUserId: string } | null) => void;
 }) {
-  const supabase = getBrowserSupabase();
-  const [state, setState] = useState<AuthState>(supabase ? { kind: 'signed_out' } : { kind: 'disabled' });
+  const { supabase, state, sendMagicLink, signOut } = useMembership();
   const [emailInput, setEmailInput] = useState('');
   const [showSignIn, setShowSignIn] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // Mirror the local state up to the parent on every transition.
+  // useMembership doesn't know which request the user is looking at,
+  // so we layer the per-request access check on top of its
+  // `signed_in` state. RLS gives back the request row only if the
+  // user's tenant owns it; we mirror that into a local state machine.
+  const [access, setAccess] = useState<AccessState>({ kind: 'checking' });
+
+  useEffect(() => {
+    let cancelled = false;
+    if (state.kind !== 'signed_in' || !supabase) {
+      setAccess({ kind: 'checking' });
+      return;
+    }
+    setAccess({ kind: 'checking' });
+    void canAuthorOnRequest(supabase, hash).then((requestId) => {
+      if (cancelled) return;
+      setAccess(requestId ? { kind: 'ready', request_id: requestId } : { kind: 'no_access' });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [state.kind, supabase, hash]);
+
+  // Surface the (requestId, tenantUserId) tuple upward only when the
+  // visitor is genuinely authorized on THIS request.
   useEffect(() => {
     if (!onAuthoringChange) return;
-    if (state.kind === 'signed_in') {
-      onAuthoringChange({ requestId: state.request_id, tenantUserId: state.tenant_user_id });
+    if (state.kind === 'signed_in' && access.kind === 'ready') {
+      onAuthoringChange({
+        requestId: access.request_id,
+        tenantUserId: state.membership.tenant_user_id,
+      });
     } else {
       onAuthoringChange(null);
     }
-  }, [state, onAuthoringChange]);
-
-  useEffect(() => {
-    if (!supabase) return;
-    let cancelled = false;
-
-    async function syncFromSession(session: Session | null) {
-      if (!session || !supabase) {
-        if (!cancelled) setState({ kind: 'signed_out' });
-        return;
-      }
-      if (!cancelled) setState({ kind: 'claiming' });
-      await claimMembership(supabase);
-      const membership = await loadMembership(supabase);
-      if (cancelled) return;
-      if (!membership) {
-        setState({ kind: 'signed_in_no_access' });
-        return;
-      }
-      const requestId = await canAuthorOnRequest(supabase, hash);
-      if (cancelled) return;
-      if (!requestId) {
-        setState({ kind: 'signed_in_no_access' });
-        return;
-      }
-      setState({ kind: 'signed_in', tenant_user_id: membership.tenant_user_id, request_id: requestId });
-    }
-
-    void supabase.auth.getSession().then(({ data }) => syncFromSession(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) =>
-      syncFromSession(session),
-    );
-
-    return () => {
-      cancelled = true;
-      sub.subscription.unsubscribe();
-    };
-  }, [hash, supabase]);
+  }, [state, access, onAuthoringChange]);
 
   if (state.kind === 'disabled') return null;
 
-  if (state.kind === 'signed_in') {
+  if (state.kind === 'signed_in' && access.kind === 'ready' && supabase) {
     return (
       <SignedInPanel
-        supabase={supabase!}
-        requestId={state.request_id}
-        tenantUserId={state.tenant_user_id}
+        supabase={supabase}
+        requestId={access.request_id}
+        tenantUserId={state.membership.tenant_user_id}
         onChange={onChange}
-        onSignOut={async () => {
-          await supabase!.auth.signOut();
-        }}
+        onSignOut={() => void signOut()}
       />
     );
   }
 
-  if (state.kind === 'signed_in_no_access') {
+  if (state.kind === 'signed_in' && access.kind === 'no_access') {
     return (
       <Panel>
         <p className="text-ink-soft text-sm leading-relaxed">
@@ -113,7 +93,7 @@ export default function AuthoringPanel({
         <button
           type="button"
           className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-ink"
-          onClick={() => supabase!.auth.signOut()}
+          onClick={() => void signOut()}
         >
           Sign out
         </button>
@@ -121,7 +101,25 @@ export default function AuthoringPanel({
     );
   }
 
-  if (state.kind === 'claiming') {
+  if (state.kind === 'signed_in_no_access') {
+    return (
+      <Panel>
+        <p className="text-ink-soft text-sm leading-relaxed">
+          You're signed in, but you don't belong to a tenant yet. Ask the team who
+          invited you to confirm the invite is on file.
+        </p>
+        <button
+          type="button"
+          className="mt-3 text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-ink"
+          onClick={() => void signOut()}
+        >
+          Sign out
+        </button>
+      </Panel>
+    );
+  }
+
+  if (state.kind === 'claiming' || (state.kind === 'signed_in' && access.kind === 'checking')) {
     return (
       <Panel>
         <p className="font-mono text-sm text-ink-muted">Checking access…</p>
@@ -133,8 +131,8 @@ export default function AuthoringPanel({
     return (
       <Panel>
         <p className="text-ink-soft text-sm leading-relaxed">
-          We sent a sign-in link to <span className="font-mono">{state.email}</span>. Click it
-          to come back here with authoring access.
+          We sent a sign-in link to <span className="font-mono">{state.email}</span>. Click
+          it to come back here with authoring access.
         </p>
       </Panel>
     );
@@ -165,18 +163,9 @@ export default function AuthoringPanel({
         className="mt-4 flex gap-2"
         onSubmit={async (e) => {
           e.preventDefault();
-          const email = emailInput.trim().toLowerCase();
-          if (!email) return;
-          const { error } = await supabase!.auth.signInWithOtp({
-            email,
-            options: { emailRedirectTo: window.location.href },
-          });
-          if (error) {
-            // eslint-disable-next-line no-alert
-            alert(`Could not send the sign-in link: ${error.message}`);
-            return;
-          }
-          setState({ kind: 'sent_link', email });
+          setErrorMsg(null);
+          const r = await sendMagicLink(emailInput);
+          if (!r.ok) setErrorMsg(r.message);
         }}
       >
         <input
@@ -194,6 +183,11 @@ export default function AuthoringPanel({
           Send link
         </button>
       </form>
+      {errorMsg && (
+        <p className="mt-2 text-sm text-seal" role="alert">
+          {errorMsg}
+        </p>
+      )}
     </Panel>
   );
 }
@@ -213,7 +207,7 @@ function SignedInPanel({
   requestId: string;
   tenantUserId: string;
   onChange: () => void;
-  onSignOut: () => Promise<void>;
+  onSignOut: () => void;
 }) {
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -226,7 +220,7 @@ function SignedInPanel({
         <button
           type="button"
           className="text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-ink"
-          onClick={() => void onSignOut()}
+          onClick={onSignOut}
         >
           Sign out
         </button>
