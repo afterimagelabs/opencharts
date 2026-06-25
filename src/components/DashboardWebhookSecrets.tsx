@@ -17,6 +17,9 @@ import {
   type ServiceGroup,
   type WebhookService,
 } from '../lib/dashboardWebhookSecrets';
+import NativeCredPanel from './NativeCredPanel';
+
+const SERVICES_WITH_NATIVE_SIG: ReadonlySet<WebhookService> = new Set(['twilio', 'mailgun']);
 
 const SERVICE_LABEL: Record<WebhookService, string> = {
   humblefax: 'HumbleFax',
@@ -36,7 +39,13 @@ const SERVICE_HINT: Record<WebhookService, string> = {
     'Set this in Script Properties as OC_WEBHOOK_SECRET, then your Apps Script trigger posts it as a header.',
 };
 
-export default function DashboardWebhookSecrets({ supabase }: { supabase: SupabaseClient }) {
+export default function DashboardWebhookSecrets({
+  supabase,
+  tenantId,
+}: {
+  supabase: SupabaseClient;
+  tenantId: string;
+}) {
   type State =
     | { kind: 'loading' }
     | { kind: 'ok'; groups: ServiceGroup[] }
@@ -118,6 +127,8 @@ export default function DashboardWebhookSecrets({ supabase }: { supabase: Supaba
                 key={service}
                 group={group}
                 busy={working === service}
+                supabase={supabase}
+                tenantId={tenantId}
                 onMint={() => void onMint(service)}
                 onRevoke={(id) => void onRevoke(id)}
               />
@@ -132,11 +143,15 @@ export default function DashboardWebhookSecrets({ supabase }: { supabase: Supaba
 function ServiceCard({
   group,
   busy,
+  supabase,
+  tenantId,
   onMint,
   onRevoke,
 }: {
   group: ServiceGroup;
   busy: boolean;
+  supabase: SupabaseClient;
+  tenantId: string;
   onMint: () => void;
   onRevoke: (id: string) => void;
 }) {
@@ -190,6 +205,14 @@ function ServiceCard({
             ))}
           </ul>
         </details>
+      )}
+
+      {SERVICES_WITH_NATIVE_SIG.has(group.service) && (
+        <NativeCredPanel
+          supabase={supabase}
+          service={group.service as 'twilio' | 'mailgun'}
+          tenantId={tenantId}
+        />
       )}
     </div>
   );
