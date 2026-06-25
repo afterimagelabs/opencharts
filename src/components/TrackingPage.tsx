@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import AuthoringPanel from './AuthoringPanel';
+import { getBrowserSupabase } from '../lib/supabase';
+import { setEventIncomplete } from '../lib/authoring';
 
 type EventType =
   | 'call'
@@ -10,12 +12,21 @@ type EventType =
   | 'note_added';
 type ContactChannel = 'call' | 'fax' | 'email';
 type Event = {
+  id: string;
   at: string;
   type: EventType;
   content?: string;
   // Only set for records_received events. True when ops flagged the
   // returned records as incomplete (partial, missing date ranges, etc.).
   incomplete?: boolean;
+};
+
+// Signed-in authoring context for the timeline rows. Set by
+// AuthoringPanel when the visitor is signed in and belongs to the
+// tenant that owns this request.
+export type TimelineAuthoring = {
+  requestId: string;
+  tenantUserId: string;
 };
 
 type TrackingPayload = {
@@ -40,6 +51,7 @@ type State =
 export default function TrackingPage({ hash }: { hash: string }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
   const [reloadKey, setReloadKey] = useState(0);
+  const [authoring, setAuthoring] = useState<TimelineAuthoring | null>(null);
 
   const reload = useCallback(() => setReloadKey((n) => n + 1), []);
 
@@ -84,8 +96,10 @@ export default function TrackingPage({ hash }: { hash: string }) {
     <div className="min-h-screen bg-paper text-ink">
       <div className="mx-auto max-w-3xl px-6 py-12 lg:py-16">
         <Header />
-        <Card state={state} hash={hash} />
-        {state.kind === 'ok' && <AuthoringPanel hash={hash} onChange={reload} />}
+        <Card state={state} hash={hash} authoring={authoring} onTimelineReload={reload} />
+        {state.kind === 'ok' && (
+          <AuthoringPanel hash={hash} onChange={reload} onAuthoringChange={setAuthoring} />
+        )}
         <Footer />
       </div>
     </div>
@@ -110,7 +124,17 @@ function Header() {
   );
 }
 
-function Card({ state, hash }: { state: State; hash: string }) {
+function Card({
+  state,
+  hash,
+  authoring,
+  onTimelineReload,
+}: {
+  state: State;
+  hash: string;
+  authoring: TimelineAuthoring | null;
+  onTimelineReload: () => void;
+}) {
   if (state.kind === 'loading') {
     return (
       <Panel>
@@ -152,10 +176,18 @@ function Card({ state, hash }: { state: State; hash: string }) {
     );
   }
 
-  return <Timeline data={state.data} />;
+  return <Timeline data={state.data} authoring={authoring} onTimelineReload={onTimelineReload} />;
 }
 
-function Timeline({ data }: { data: TrackingPayload }) {
+function Timeline({
+  data,
+  authoring,
+  onTimelineReload,
+}: {
+  data: TrackingPayload;
+  authoring: TimelineAuthoring | null;
+  onTimelineReload: () => void;
+}) {
   const eventCount = data.events.length;
   const notYetSent = data.initial_request_at === null;
   const status = useMemo(() => {
@@ -284,7 +316,15 @@ function Timeline({ data }: { data: TrackingPayload }) {
                 rendered.push(<MilestoneRow key={`milestone`} at={data.deadline!} />);
                 milestoneInserted = true;
               }
-              rendered.push(<Row key={i} event={event} isFirst={i === firstOutboundIdx} />);
+              rendered.push(
+                <Row
+                  key={event.id || i}
+                  event={event}
+                  isFirst={i === firstOutboundIdx}
+                  authoring={authoring}
+                  onTimelineReload={onTimelineReload}
+                />,
+              );
             });
             // If the deadline is past every existing event, the milestone
             // belongs at the end of the timeline.
@@ -306,7 +346,17 @@ function Timeline({ data }: { data: TrackingPayload }) {
   );
 }
 
-function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
+function Row({
+  event,
+  isFirst,
+  authoring,
+  onTimelineReload,
+}: {
+  event: Event;
+  isFirst: boolean;
+  authoring: TimelineAuthoring | null;
+  onTimelineReload: () => void;
+}) {
   let label: React.ReactNode;
   let accent: string;
   if (event.type === 'records_received') {
@@ -335,6 +385,12 @@ function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
     label = followUpLabelFor(event.type as ContactChannel);
     accent = 'text-ink';
   }
+
+  // Only records_received rows expose the incomplete toggle. fax/call/
+  // email/note rows can have an `incomplete` flag too at the schema
+  // level but it isn't UX-meaningful for them yet.
+  const canToggle = authoring !== null && event.type === 'records_received' && !!event.id;
+
   return (
     <div className="grid grid-cols-[80px_60px_1fr] gap-4 px-5 py-3">
       <div className="text-ink-muted">{fmtDate(event.at)}</div>
@@ -346,7 +402,61 @@ function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
             {event.content}
           </div>
         )}
+        {canToggle && (
+          <IncompleteToggle
+            eventId={event.id}
+            currentlyIncomplete={!!event.incomplete}
+            onTimelineReload={onTimelineReload}
+          />
+        )}
       </div>
+    </div>
+  );
+}
+
+function IncompleteToggle({
+  eventId,
+  currentlyIncomplete,
+  onTimelineReload,
+}: {
+  eventId: string;
+  currentlyIncomplete: boolean;
+  onTimelineReload: () => void;
+}) {
+  const [submitting, setSubmitting] = useState(false);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  return (
+    <div className="mt-2 text-[11px] uppercase tracking-[0.18em] text-ink-muted">
+      <button
+        type="button"
+        disabled={submitting}
+        onClick={async () => {
+          const supabase = getBrowserSupabase();
+          if (!supabase) return;
+          setSubmitting(true);
+          setLastError(null);
+          const r = await setEventIncomplete(supabase, eventId, !currentlyIncomplete);
+          setSubmitting(false);
+          if (!r.ok) {
+            setLastError(r.message);
+            return;
+          }
+          onTimelineReload();
+        }}
+        className="underline hover:text-ink disabled:opacity-50"
+      >
+        {submitting
+          ? 'Saving…'
+          : currentlyIncomplete
+            ? 'Unflag as incomplete'
+            : 'Flag as incomplete'}
+      </button>
+      {lastError && (
+        <span className="ml-2 text-seal normal-case tracking-normal" role="alert">
+          {lastError}
+        </span>
+      )}
     </div>
   );
 }
