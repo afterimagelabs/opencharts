@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import AuthoringPanel from './AuthoringPanel';
 
 type EventType =
   | 'call'
@@ -38,18 +39,19 @@ type State =
 
 export default function TrackingPage({ hash }: { hash: string }) {
   const [state, setState] = useState<State>({ kind: 'loading' });
+  const [reloadKey, setReloadKey] = useState(0);
+
+  const reload = useCallback(() => setReloadKey((n) => n + 1), []);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
-        // Default: hit the CF Pages Function which proxies to the
-        // records backend so the browser only sees opencharts.org URLs.
+        // Default: hit the CF Pages Function which serves the timeline
+        // directly from the OpenCharts Supabase project.
         //
         // VITE_TRACKING_API_BASE lets a local dev session bypass the
-        // function and fetch the records backend directly. Set it to
-        // the CMS backend's public-route URL during dev:
-        //   VITE_TRACKING_API_BASE=http://localhost:3001/api/public/records-request
+        // function and fetch a different upstream during development.
         const base =
           (import.meta.env.VITE_TRACKING_API_BASE as string | undefined)?.trim() ||
           '/api/track';
@@ -76,13 +78,14 @@ export default function TrackingPage({ hash }: { hash: string }) {
     return () => {
       cancelled = true;
     };
-  }, [hash]);
+  }, [hash, reloadKey]);
 
   return (
     <div className="min-h-screen bg-paper text-ink">
       <div className="mx-auto max-w-3xl px-6 py-12 lg:py-16">
         <Header />
         <Card state={state} hash={hash} />
+        {state.kind === 'ok' && <AuthoringPanel hash={hash} onChange={reload} />}
         <Footer />
       </div>
     </div>
