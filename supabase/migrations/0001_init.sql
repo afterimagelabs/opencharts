@@ -81,9 +81,14 @@ create table webhook_secrets (
   prefix text not null,
   hashed_secret text not null,
   created_at timestamptz not null default now(),
-  revoked_at timestamptz,
-  unique (tenant_id, service, revoked_at)
+  revoked_at timestamptz
 );
+
+-- Only one *active* secret allowed per (tenant, service). Revoked rows
+-- coexist for audit history. NULLs are distinct in a plain UNIQUE so we
+-- use a partial unique index instead.
+create unique index webhook_secrets_active_per_tenant_service
+  on webhook_secrets (tenant_id, service) where revoked_at is null;
 
 create index webhook_secrets_prefix_idx on webhook_secrets (prefix) where revoked_at is null;
 

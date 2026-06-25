@@ -99,19 +99,73 @@ OpenCharts intentionally does **not** share a Supabase project with CMS. To stan
    ```
    Capture the printed secret — it won't be shown again.
 
+## Webhook adapters
+
+Each adapter has a **stable per-tenant URL**. Tenants configure their provider account to POST to that URL with a per-(tenant, service) shared secret. The hash for each event is extracted from the provider's payload — tenants embed it in outbound traffic per service-specific recipes.
+
+### Auth
+- Header: `X-OpenCharts-Webhook-Secret: <64-hex-token>`
+- Twilio fallback: `?s=<64-hex-token>` query param (Twilio webhooks can't set custom headers)
+- One active secret per `(tenant, service)`. `POST /api/v1/webhook-secrets` mints a new one and auto-revokes the previous active secret for the same service.
+
+### Endpoints + hash recipes
+
+| Endpoint | Service | Where to embed the hash in outbound traffic |
+|---|---|---|
+| `POST /api/webhooks/humblefax` | HumbleFax sent fax status | `referenceId: "oc:<hash>"` on the sent fax |
+| `POST /api/webhooks/humblefax/inbound` | HumbleFax inbound fax | No hash needed — matches by sender fax number against open requests' `provider_fax` |
+| `POST /api/webhooks/twilio` | Twilio voice status callback | `<Parameter name="oc_hash" value="<hash>"/>` in TwiML, or `customParameters: { oc_hash: <hash> }` on REST calls. Only terminal call statuses are logged. |
+| `POST /api/webhooks/mailgun` | Mailgun sent email delivery | `v:oc_hash=<hash>` Mailgun variable on the outbound message |
+| `POST /api/webhooks/mailgun/inbound` | Mailgun inbound reply | Tenant sends FROM `records+<hash>@tenantdomain.com`; replies route back automatically |
+| `POST /api/webhooks/gmail` | Gmail (forwarded via Apps Script) | Same `records+<hash>@` pattern in any address field |
+
+### Dedup
+Each adapter inserts with `external_id = <provider message id>`. The schema has a unique index on `(request_id, source, external_id)`. Webhook retries are no-ops — the response says `deduped: true` and providers can keep retrying safely.
+
+### Match-or-ignore semantics
+All adapters return `200 ok:true` even when the hash doesn't match anything in this tenant's data (`matched: false, reason: 'unknown_hash' | 'no_oc_hash' | …`). This is deliberate: we don't want to leak the existence of other tenants' hashes via a 404, and we don't want providers to retry forever on a fax that genuinely isn't ours.
+
+### Gmail Apps Script sample
+
+Gmail has no hosted webhook product, so tenants integrate via Apps Script. Drop this into Apps Script and set `OC_WEBHOOK_SECRET` in Script Properties:
+
+```javascript
+function onGmailMessage(e) {
+  const msg = GmailApp.getMessageById(e.messageId);
+  const secret = PropertiesService.getScriptProperties().getProperty('OC_WEBHOOK_SECRET');
+  UrlFetchApp.fetch('https://opencharts.org/api/webhooks/gmail', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { 'X-OpenCharts-Webhook-Secret': secret },
+    payload: JSON.stringify({
+      from: msg.getFrom(),
+      to: msg.getTo().split(',').map(s => s.trim()),
+      cc: msg.getCc().split(',').map(s => s.trim()).filter(Boolean),
+      reply_to: msg.getReplyTo(),
+      subject: msg.getSubject(),
+      occurred_at: msg.getDate().toISOString(),
+      external_id: msg.getId(),
+      direction: 'inbound',
+    }),
+  });
+}
+```
+
 ## What's done / what's next
 
-PR #1 (this PR) — multi-tenant foundation:
-- Schema + RLS
-- Public read endpoint repointed at the new Supabase
-- Tenant API: create/list requests, create/list API keys, log events
-- Tests for crypto helpers, tenant auth, and timeline assembly
-- Bootstrap script for creating tenants
+PR #1 — multi-tenant foundation:
+- Schema + RLS, public read endpoint, tenant API (requests + API keys), bootstrap script.
 
-Still to do (subsequent PRs):
-- **PR #2 — webhook adapters**: Gmail (Pub/Sub), HumbleFax (sent + inbound), Twilio (voice/SMS), Mailgun. Each with per-service signature verification and hash extraction (from outbound message metadata, e.g. `records+<hash>@tenantdomain`).
+PR #2 — webhook adapters:
+- Per-tenant secret management (`/api/v1/webhook-secrets`)
+- HumbleFax sent + inbound, Twilio voice, Mailgun sent + inbound, Gmail forwarded
+- Dedup via `(request_id, source, external_id)` unique index
+- Updated `POST /api/v1/requests` response: returns `embed_hash` recipes per request and stable `webhook_endpoints`
+
+Still to do:
 - **PR #3 — authoring UI**: magic-link sign-in on the public page; in-page note + incomplete-flag controls for logged-in tenant users; RLS enforced end-to-end.
-- **PR #4 — tenant dashboard**: list all requests, manage API keys, manage webhook secrets.
+- **PR #4 — tenant dashboard**: list all requests, manage API keys, manage webhook secrets, browse webhook history.
+- **Future**: native signature verification per service (Twilio X-Twilio-Signature, Mailgun HMAC) as alternatives to the shared-secret pattern; Gmail Pub/Sub direct integration.
 
 ## Things to watch for
 
