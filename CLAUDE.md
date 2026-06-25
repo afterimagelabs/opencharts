@@ -175,11 +175,18 @@ PR #3 — authoring UI:
 - `events_member_update` RLS policy so future per-event incomplete toggles work
 - `POST/GET /api/v1/tenant-users` for inviting members by email
 
+PR #4 — per-event incomplete toggles:
+- `setEventIncomplete` helper + "Flag as incomplete" / "Unflag" link on each `records_received` row when signed-in tenant member is viewing the timeline
+
+PR #5 — tenant dashboard (this PR):
+- `/dashboard` route. Magic-link sign-in → requests list (RLS-scoped) with provider name, patient_ref, derived status, and a link to each public timeline
+- Shared `useMembership` hook in `src/lib/useMembership.ts` (consolidates the sign-in → claim → load-tenant_users flow). AuthoringPanel still has its old in-line state machine — refactoring it to use the hook is follow-up cleanup, not blocking
+
 Still to do:
-- **PR #4 — tenant dashboard**: list all requests, manage API keys, manage webhook secrets, browse webhook history.
-- **Per-event incomplete toggles** on the timeline UI itself (the policy and helper exist; the React UI in TrackingPage doesn't render them yet).
-- **Future**: Twilio X-Twilio-Signature + Mailgun HMAC native verification; Gmail Pub/Sub.
-- **Future**: native signature verification per service (Twilio X-Twilio-Signature, Mailgun HMAC) as alternatives to the shared-secret pattern; Gmail Pub/Sub direct integration.
+- **Dashboard expansion**: API key management page, webhook secrets management page, team management page (tenant_users CRUD)
+- **Native signature verification** for Twilio (X-Twilio-Signature) + Mailgun HMAC, as alternatives to the shared-secret pattern
+- **Gmail Pub/Sub direct integration** (currently we have the Apps Script forwarding pattern only)
+- **Refactor AuthoringPanel to use `useMembership`** so the sign-in / claim flow has one source of truth
 
 ## Things to watch for
 
