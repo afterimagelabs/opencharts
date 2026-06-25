@@ -119,6 +119,7 @@ export default function Dashboard() {
           <SignedInDashboard
             supabase={supabase}
             page={page}
+            tenantId={state.membership.tenant_id}
             onSignOut={() => void signOut()}
           />
         )}
@@ -177,10 +178,12 @@ function Panel({ children }: { children: React.ReactNode }) {
 function SignedInDashboard({
   supabase,
   page,
+  tenantId,
   onSignOut,
 }: {
   supabase: import('@supabase/supabase-js').SupabaseClient;
   page: DashboardPage;
+  tenantId: string;
   onSignOut: () => void;
 }) {
   return (
@@ -197,7 +200,7 @@ function SignedInDashboard({
       </div>
       {page === 'requests' && <RequestsView supabase={supabase} />}
       {page === 'api-keys' && <DashboardApiKeys supabase={supabase} />}
-      {page === 'webhook-secrets' && <DashboardWebhookSecrets supabase={supabase} />}
+      {page === 'webhook-secrets' && <DashboardWebhookSecrets supabase={supabase} tenantId={tenantId} />}
       {page === 'team' && <DashboardTeam supabase={supabase} />}
     </div>
   );
