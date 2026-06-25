@@ -25,14 +25,30 @@ type AuthState =
 export default function AuthoringPanel({
   hash,
   onChange,
+  onAuthoringChange,
 }: {
   hash: string;
   onChange: () => void;
+  // Surfaces signed-in authoring state up to TrackingPage so timeline
+  // rows can render per-event controls (e.g. the incomplete toggle).
+  // Called with `null` whenever the visitor leaves the `signed_in`
+  // state.
+  onAuthoringChange?: (state: { requestId: string; tenantUserId: string } | null) => void;
 }) {
   const supabase = getBrowserSupabase();
   const [state, setState] = useState<AuthState>(supabase ? { kind: 'signed_out' } : { kind: 'disabled' });
   const [emailInput, setEmailInput] = useState('');
   const [showSignIn, setShowSignIn] = useState(false);
+
+  // Mirror the local state up to the parent on every transition.
+  useEffect(() => {
+    if (!onAuthoringChange) return;
+    if (state.kind === 'signed_in') {
+      onAuthoringChange({ requestId: state.request_id, tenantUserId: state.tenant_user_id });
+    } else {
+      onAuthoringChange(null);
+    }
+  }, [state, onAuthoringChange]);
 
   useEffect(() => {
     if (!supabase) return;
