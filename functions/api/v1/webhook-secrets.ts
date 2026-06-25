@@ -5,12 +5,13 @@
 //                                       secret for the same service.
 // GET  /api/v1/webhook-secrets        — list secrets (prefixes only).
 //
-// Auth: Authorization: Bearer <tenant_api_key>
+// Auth: Authorization: Bearer <token> where <token> is either a tenant
+// API key OR a Supabase JWT (signed-in dashboard user).
 
 import { generateToken, sha256Hex, tokenPrefix } from '../_lib/crypto';
+import { authenticateAnyTenant } from '../_lib/dualAuth';
 import { jsonError, jsonResponse } from '../_lib/responses';
 import { getServiceSupabase, type OpenChartsEnv } from '../_lib/supabase';
-import { authenticateTenant } from '../_lib/tenantAuth';
 
 const ALLOWED_SERVICES = new Set(['gmail', 'humblefax', 'twilio', 'mailgun']);
 
@@ -20,7 +21,7 @@ interface CreateBody {
 
 export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request }) => {
   const supabase = getServiceSupabase(env);
-  const tenant = await authenticateTenant(supabase, request.headers.get('Authorization'));
+  const tenant = await authenticateAnyTenant(supabase, request.headers.get('Authorization'));
   if (!tenant) return jsonError(401, 'unauthorized');
 
   let body: CreateBody = {};
@@ -83,7 +84,7 @@ export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request
 
 export const onRequestGet: PagesFunction<OpenChartsEnv> = async ({ env, request }) => {
   const supabase = getServiceSupabase(env);
-  const tenant = await authenticateTenant(supabase, request.headers.get('Authorization'));
+  const tenant = await authenticateAnyTenant(supabase, request.headers.get('Authorization'));
   if (!tenant) return jsonError(401, 'unauthorized');
 
   const { data, error } = await supabase

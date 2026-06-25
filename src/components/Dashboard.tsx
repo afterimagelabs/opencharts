@@ -9,11 +9,13 @@ import { useEffect, useState } from 'react';
 import { useMembership } from '../lib/useMembership';
 import { deriveStatus, listRequests, statusLabel, type DashboardRequest } from '../lib/dashboard';
 import DashboardApiKeys from './DashboardApiKeys';
+import DashboardWebhookSecrets from './DashboardWebhookSecrets';
 
-type DashboardPage = 'requests' | 'api-keys';
+type DashboardPage = 'requests' | 'api-keys' | 'webhook-secrets';
 
 function pickPage(path: string): DashboardPage {
   if (path.startsWith('/dashboard/api-keys')) return 'api-keys';
+  if (path.startsWith('/dashboard/webhook-secrets')) return 'webhook-secrets';
   return 'requests';
 }
 
@@ -144,6 +146,7 @@ function DashboardNav({ page }: { page: DashboardPage }) {
   const items: { id: DashboardPage; label: string; href: string }[] = [
     { id: 'requests', label: 'Requests', href: '/dashboard' },
     { id: 'api-keys', label: 'API keys', href: '/dashboard/api-keys' },
+    { id: 'webhook-secrets', label: 'Webhook secrets', href: '/dashboard/webhook-secrets' },
   ];
   return (
     <nav className="flex gap-6 mb-8 border-b hairline text-[12px] uppercase tracking-[0.18em]">
@@ -191,6 +194,7 @@ function SignedInDashboard({
       </div>
       {page === 'requests' && <RequestsView supabase={supabase} />}
       {page === 'api-keys' && <DashboardApiKeys supabase={supabase} />}
+      {page === 'webhook-secrets' && <DashboardWebhookSecrets supabase={supabase} />}
     </div>
   );
 }
