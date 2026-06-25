@@ -77,6 +77,13 @@ npm run dev
 npm run build && npm run pages:dev
 ```
 
+The SPA needs its own env vars (Vite reads `.env` / `.env.local` at build time):
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+When these are missing the authoring panel quietly disables itself — the public timeline still renders.
+
 The Functions need `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` at runtime — locally via `.dev.vars`, in production via the Cloudflare Pages project's environment variables (set both Production and Preview).
 
 ## Provisioning a Supabase project for OpenCharts
@@ -162,9 +169,16 @@ PR #2 — webhook adapters:
 - Dedup via `(request_id, source, external_id)` unique index
 - Updated `POST /api/v1/requests` response: returns `embed_hash` recipes per request and stable `webhook_endpoints`
 
+PR #3 — authoring UI:
+- Magic-link sign-in on the public `opencharts.org/request/<hash>` page; `tenant_users` invites with `user_id` nullable until claimed; `claim_tenant_membership()` RPC pairs the auth.users row to the pending invite on first sign-in
+- Note authoring panel on the public page (direct Supabase writes, gated by RLS)
+- `events_member_update` RLS policy so future per-event incomplete toggles work
+- `POST/GET /api/v1/tenant-users` for inviting members by email
+
 Still to do:
-- **PR #3 — authoring UI**: magic-link sign-in on the public page; in-page note + incomplete-flag controls for logged-in tenant users; RLS enforced end-to-end.
 - **PR #4 — tenant dashboard**: list all requests, manage API keys, manage webhook secrets, browse webhook history.
+- **Per-event incomplete toggles** on the timeline UI itself (the policy and helper exist; the React UI in TrackingPage doesn't render them yet).
+- **Future**: Twilio X-Twilio-Signature + Mailgun HMAC native verification; Gmail Pub/Sub.
 - **Future**: native signature verification per service (Twilio X-Twilio-Signature, Mailgun HMAC) as alternatives to the shared-secret pattern; Gmail Pub/Sub direct integration.
 
 ## Things to watch for
