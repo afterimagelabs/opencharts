@@ -6,11 +6,12 @@
 //                                the claim_tenant_membership() RPC.
 // GET  /api/v1/tenant-users   — list members + pending invites.
 //
-// Auth: Authorization: Bearer <tenant_api_key>
+// Auth: Authorization: Bearer <token> where <token> is either a tenant
+// API key OR a Supabase JWT (signed-in dashboard user).
 
+import { authenticateAnyTenant } from '../_lib/dualAuth';
 import { jsonError, jsonResponse } from '../_lib/responses';
 import { getServiceSupabase, type OpenChartsEnv } from '../_lib/supabase';
-import { authenticateTenant } from '../_lib/tenantAuth';
 
 const ALLOWED_ROLES = new Set(['admin', 'ops', 'viewer']);
 // Loose RFC-5322ish check — we don't need full conformance, just to
@@ -25,7 +26,7 @@ interface InviteBody {
 
 export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request }) => {
   const supabase = getServiceSupabase(env);
-  const tenant = await authenticateTenant(supabase, request.headers.get('Authorization'));
+  const tenant = await authenticateAnyTenant(supabase, request.headers.get('Authorization'));
   if (!tenant) return jsonError(401, 'unauthorized');
 
   let body: InviteBody;
@@ -75,7 +76,7 @@ export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request
 
 export const onRequestGet: PagesFunction<OpenChartsEnv> = async ({ env, request }) => {
   const supabase = getServiceSupabase(env);
-  const tenant = await authenticateTenant(supabase, request.headers.get('Authorization'));
+  const tenant = await authenticateAnyTenant(supabase, request.headers.get('Authorization'));
   if (!tenant) return jsonError(401, 'unauthorized');
 
   const { data, error } = await supabase

@@ -188,14 +188,19 @@ PR #6 — dashboard API keys page:
 - New `POST /api/v1/api-keys/:id/revoke` endpoint (scoped by tenant_id; idempotent; returns `already_revoked` for already-revoked rows)
 - Dashboard sub-routing via path matching in `pickPage()`
 
-PR #7 — dashboard webhook secrets page (this PR):
+PR #7 — dashboard webhook secrets page:
 - `/dashboard/webhook-secrets` route. One card per service (humblefax / twilio / mailgun / gmail) with the active secret prefix, a generate/rotate button, and a "N revoked" collapsible history
 - `/api/v1/webhook-secrets` (POST + GET) switched to dual auth so the dashboard can call it with the user's JWT
 - New `POST /api/v1/webhook-secrets/:id/revoke` endpoint (same idempotent pattern as the API key revoke)
 - `groupByService()` helper returns the active + revoked breakdown per service so the UI renders predictably even when a tenant has zero secrets for some services
 
+PR #8 — dashboard team page (this PR):
+- `/dashboard/team` route. Invite by email + role; list members with `active`/`pending` status; remove members
+- `/api/v1/tenant-users` (POST + GET) switched to dual auth
+- New `DELETE /api/v1/tenant-users/:id` endpoint. Tenant-scoped; the JWT path cannot remove its own row (lockout guard); API-key path is treated as a system caller and can remove anyone
+- SPA helpers in `src/lib/dashboardTeam.ts` (list / invite / remove / deriveStatus)
+
 Still to do:
-- **Dashboard expansion**: team management page (tenant_users CRUD)
 - **Native signature verification** for Twilio (X-Twilio-Signature) + Mailgun HMAC, as alternatives to the shared-secret pattern
 - **Gmail Pub/Sub direct integration** (currently we have the Apps Script forwarding pattern only)
 - **Refactor AuthoringPanel to use `useMembership`** so the sign-in / claim flow has one source of truth
