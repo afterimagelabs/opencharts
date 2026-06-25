@@ -8,12 +8,21 @@
 import { useEffect, useState } from 'react';
 import { useMembership } from '../lib/useMembership';
 import { deriveStatus, listRequests, statusLabel, type DashboardRequest } from '../lib/dashboard';
+import DashboardApiKeys from './DashboardApiKeys';
+
+type DashboardPage = 'requests' | 'api-keys';
+
+function pickPage(path: string): DashboardPage {
+  if (path.startsWith('/dashboard/api-keys')) return 'api-keys';
+  return 'requests';
+}
 
 export default function Dashboard() {
   const { supabase, state, sendMagicLink, signOut } = useMembership();
   const [emailInput, setEmailInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const page = pickPage(typeof window !== 'undefined' ? window.location.pathname : '/dashboard');
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -105,6 +114,7 @@ export default function Dashboard() {
         {state.kind === 'signed_in' && supabase && (
           <SignedInDashboard
             supabase={supabase}
+            page={page}
             onSignOut={() => void signOut()}
           />
         )}
@@ -119,14 +129,38 @@ export default function Dashboard() {
 
 function DashboardHeader() {
   return (
-    <header className="border-b hairline pb-6 mb-10">
+    <header className="border-b hairline pb-6 mb-8">
       <div className="text-[11px] uppercase tracking-[0.22em] text-ink-muted">
         OpenCharts · Tenant Dashboard
       </div>
       <h1 className="font-serif text-3xl lg:text-4xl mt-3 leading-tight tracking-tight font-semibold">
-        Records requests
+        Dashboard
       </h1>
     </header>
+  );
+}
+
+function DashboardNav({ page }: { page: DashboardPage }) {
+  const items: { id: DashboardPage; label: string; href: string }[] = [
+    { id: 'requests', label: 'Requests', href: '/dashboard' },
+    { id: 'api-keys', label: 'API keys', href: '/dashboard/api-keys' },
+  ];
+  return (
+    <nav className="flex gap-6 mb-8 border-b hairline text-[12px] uppercase tracking-[0.18em]">
+      {items.map((it) => (
+        <a
+          key={it.id}
+          href={it.href}
+          className={`pb-3 ${
+            it.id === page
+              ? 'text-ink border-b-2 border-ink -mb-px font-semibold'
+              : 'text-ink-muted hover:text-ink'
+          }`}
+        >
+          {it.label}
+        </a>
+      ))}
+    </nav>
   );
 }
 
@@ -136,11 +170,32 @@ function Panel({ children }: { children: React.ReactNode }) {
 
 function SignedInDashboard({
   supabase,
+  page,
   onSignOut,
 }: {
   supabase: import('@supabase/supabase-js').SupabaseClient;
+  page: DashboardPage;
   onSignOut: () => void;
 }) {
+  return (
+    <div>
+      <DashboardNav page={page} />
+      <div className="flex justify-end mb-4">
+        <button
+          type="button"
+          className="text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-ink"
+          onClick={onSignOut}
+        >
+          Sign out
+        </button>
+      </div>
+      {page === 'requests' && <RequestsView supabase={supabase} />}
+      {page === 'api-keys' && <DashboardApiKeys supabase={supabase} />}
+    </div>
+  );
+}
+
+function RequestsView({ supabase }: { supabase: import('@supabase/supabase-js').SupabaseClient }) {
   type State =
     | { kind: 'loading' }
     | { kind: 'ok'; requests: DashboardRequest[] }
@@ -163,25 +218,14 @@ function SignedInDashboard({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-ink-muted">
-          {state.kind === 'ok' ? `${state.requests.length} requests` : ''}
-        </div>
-        <button
-          type="button"
-          className="text-[11px] uppercase tracking-[0.18em] text-ink-muted hover:text-ink"
-          onClick={onSignOut}
-        >
-          Sign out
-        </button>
+      <div className="text-[11px] uppercase tracking-[0.18em] text-ink-muted mb-4">
+        {state.kind === 'ok' ? `${state.requests.length} requests` : ''}
       </div>
-
       {state.kind === 'loading' && (
         <Panel>
           <p className="font-mono text-sm text-ink-muted">Loading requests…</p>
         </Panel>
       )}
-
       {state.kind === 'error' && (
         <Panel>
           <p className="text-sm text-seal" role="alert">
@@ -189,7 +233,6 @@ function SignedInDashboard({
           </p>
         </Panel>
       )}
-
       {state.kind === 'ok' && state.requests.length === 0 && (
         <Panel>
           <p className="text-ink-soft text-sm leading-relaxed">
@@ -199,7 +242,6 @@ function SignedInDashboard({
           </p>
         </Panel>
       )}
-
       {state.kind === 'ok' && state.requests.length > 0 && (
         <RequestsTable rows={state.requests} />
       )}
