@@ -203,11 +203,20 @@ PR #8 — dashboard team page:
 PR #9 — AuthoringPanel refactor:
 - AuthoringPanel now consumes the shared `useMembership` hook instead of duplicating its session/claim/load state machine in-line. No behavior change
 
-PR #10 — Twilio native signature verification (this PR):
+PR #10 — Twilio native signature verification:
 - New table `tenant_native_creds` (migration `0003_native_creds.sql`) keyed by `(tenant_id, service)` with a jsonb `credential` column. Twilio rows store `{auth_token}`
 - New endpoints under `/api/v1/native-creds/twilio` — PUT to set, GET (returns `{configured: bool}` — never the plaintext), DELETE to clear
 - New webhook handler `POST /api/webhooks/twilio/:tenant_id` verifying `X-Twilio-Signature` via HMAC-SHA1 over Twilio's canonical signed-string. The shared-secret handler at `/api/webhooks/twilio` is preserved untouched for tenants who haven't migrated
 - `twilioSig.ts` helper (`buildFormSignedString` / `computeFormSignature` / `verifyTwilioFormSignature`) cross-checked against Node's `crypto.createHmac('sha1', ...)` to guarantee bit-for-bit compatibility with Twilio's reference helper
+
+PR #11 — Mailgun native signature verification (this PR):
+- Mailgun rows in `tenant_native_creds` store `{signing_key}`
+- New endpoints under `/api/v1/native-creds/mailgun` — PUT / GET / DELETE, identical shape to the Twilio credentials endpoint
+- Two new tenant-scoped webhook handlers:
+  - `POST /api/webhooks/mailgun/:tenant_id` for delivery events (`body.signature.{token,timestamp,signature}`)
+  - `POST /api/webhooks/mailgun/:tenant_id/inbound` for routes/replies (signature triple lives as separate form fields)
+- `mailgunSig.ts` helper: HMAC-SHA256 over `timestamp + token`, hex-compared; 5-minute timestamp-freshness check to make replays impractical; cross-checked against Node's `crypto.createHmac('sha256', ...)`
+- The shared-secret Mailgun handlers (`/api/webhooks/mailgun` and `/api/webhooks/mailgun/inbound`) stay untouched
 
 Still to do:
 - **Native signature verification** for Twilio (X-Twilio-Signature) + Mailgun HMAC, as alternatives to the shared-secret pattern
