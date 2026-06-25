@@ -1,55 +1,35 @@
-// Cloudflare Pages Function: proxies tracking lookups to the records
-// backend so the browser never sees the upstream hostname. Browser
-// sees only opencharts.org URLs.
+// Cloudflare Pages Function: public read-only timeline for a records
+// request, keyed by the request's unguessable public_tracking_hash.
+//
+// Backs opencharts.org/request/<hash>.
 //
 // Route: GET /api/track/:hash
 
-interface Env {
-  // Override default upstream by setting TRACKING_UPSTREAM in the
-  // Pages project environment if the API ever moves.
-  TRACKING_UPSTREAM?: string;
-}
+import { jsonError, jsonResponse } from '../_lib/responses';
+import { getServiceSupabase, type OpenChartsEnv } from '../_lib/supabase';
+import { buildTimelineForHash } from '../_lib/timeline';
 
 const HASH_RE = /^[A-Za-z0-9_-]{16,32}$/;
 
-export const onRequestGet: PagesFunction<Env> = async ({ params, env }) => {
+export const onRequestGet: PagesFunction<OpenChartsEnv> = async ({ params, env }) => {
   const hash = String(params.hash ?? '');
 
   if (!HASH_RE.test(hash)) {
-    return new Response(JSON.stringify({ error: 'not_found' }), {
-      status: 404,
-      headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-store',
-      },
-    });
+    return jsonError(404, 'not_found');
   }
 
-  const base = env.TRACKING_UPSTREAM ?? 'https://portal.ezra.legal';
-  const url = `${base}/api/public/records-request/${encodeURIComponent(hash)}`;
-
-  let upstream: Response;
+  let timeline;
   try {
-    upstream = await fetch(url, {
-      headers: { Accept: 'application/json' },
-      cf: { cacheTtl: 0, cacheEverything: false } as any,
-    });
+    const supabase = getServiceSupabase(env);
+    timeline = await buildTimelineForHash(supabase, hash);
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'upstream_unreachable' }), {
-      status: 502,
-      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-    });
+    console.error('[track] lookup failed', err);
+    return jsonError(500, 'internal_error');
   }
 
-  const body = await upstream.text();
+  if (!timeline) {
+    return jsonError(404, 'not_found');
+  }
 
-  return new Response(body, {
-    status: upstream.status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-store',
-      'X-Content-Type-Options': 'nosniff',
-      'Referrer-Policy': 'no-referrer',
-    },
-  });
+  return jsonResponse(timeline);
 };

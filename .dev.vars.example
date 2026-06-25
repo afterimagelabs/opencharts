@@ -1,0 +1,12 @@
+# Cloudflare Pages local dev vars. Copy to `.dev.vars` (gitignored) and
+# fill in. `wrangler pages dev` loads these as bindings.
+
+SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...service-role-key...
+SUPABASE_ANON_KEY=eyJ...anon-key...
+
+# Optional. When set, /api/v1/requests responses use this as the base
+# for public_url and webhook_urls. Otherwise the request's own origin
+# is used (which is fine in production; useful to set for local dev so
+# webhook URLs point at a tunneled host).
+# PUBLIC_BASE_URL=https://opencharts.org
