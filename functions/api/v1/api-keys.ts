@@ -3,13 +3,13 @@
 // POST /api/v1/api-keys     — mint a new key, returns the plaintext once
 // GET  /api/v1/api-keys     — list keys (prefix + metadata, never the secret)
 //
-// Auth: Authorization: Bearer <tenant_api_key> (any active key for the
-// tenant can mint a new key — there's no separate "admin" tier yet).
+// Auth: Authorization: Bearer <token> where <token> is either a tenant
+// API key OR a Supabase JWT (issued to a signed-in dashboard user).
 
 import { generateToken, sha256Hex, tokenPrefix } from '../_lib/crypto';
+import { authenticateAnyTenant } from '../_lib/dualAuth';
 import { jsonError, jsonResponse } from '../_lib/responses';
 import { getServiceSupabase, type OpenChartsEnv } from '../_lib/supabase';
-import { authenticateTenant } from '../_lib/tenantAuth';
 
 interface CreateKeyBody {
   name?: string;
@@ -17,7 +17,7 @@ interface CreateKeyBody {
 
 export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request }) => {
   const supabase = getServiceSupabase(env);
-  const tenant = await authenticateTenant(supabase, request.headers.get('Authorization'));
+  const tenant = await authenticateAnyTenant(supabase, request.headers.get('Authorization'));
   if (!tenant) return jsonError(401, 'unauthorized');
 
   let body: CreateKeyBody = {};
@@ -67,7 +67,7 @@ export const onRequestPost: PagesFunction<OpenChartsEnv> = async ({ env, request
 
 export const onRequestGet: PagesFunction<OpenChartsEnv> = async ({ env, request }) => {
   const supabase = getServiceSupabase(env);
-  const tenant = await authenticateTenant(supabase, request.headers.get('Authorization'));
+  const tenant = await authenticateAnyTenant(supabase, request.headers.get('Authorization'));
   if (!tenant) return jsonError(401, 'unauthorized');
 
   const { data, error } = await supabase
