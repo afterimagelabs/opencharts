@@ -194,11 +194,20 @@ PR #7 — dashboard webhook secrets page:
 - New `POST /api/v1/webhook-secrets/:id/revoke` endpoint (same idempotent pattern as the API key revoke)
 - `groupByService()` helper returns the active + revoked breakdown per service so the UI renders predictably even when a tenant has zero secrets for some services
 
-PR #8 — dashboard team page (this PR):
+PR #8 — dashboard team page:
 - `/dashboard/team` route. Invite by email + role; list members with `active`/`pending` status; remove members
 - `/api/v1/tenant-users` (POST + GET) switched to dual auth
 - New `DELETE /api/v1/tenant-users/:id` endpoint. Tenant-scoped; the JWT path cannot remove its own row (lockout guard); API-key path is treated as a system caller and can remove anyone
 - SPA helpers in `src/lib/dashboardTeam.ts` (list / invite / remove / deriveStatus)
+
+PR #9 — AuthoringPanel refactor:
+- AuthoringPanel now consumes the shared `useMembership` hook instead of duplicating its session/claim/load state machine in-line. No behavior change
+
+PR #10 — Twilio native signature verification (this PR):
+- New table `tenant_native_creds` (migration `0003_native_creds.sql`) keyed by `(tenant_id, service)` with a jsonb `credential` column. Twilio rows store `{auth_token}`
+- New endpoints under `/api/v1/native-creds/twilio` — PUT to set, GET (returns `{configured: bool}` — never the plaintext), DELETE to clear
+- New webhook handler `POST /api/webhooks/twilio/:tenant_id` verifying `X-Twilio-Signature` via HMAC-SHA1 over Twilio's canonical signed-string. The shared-secret handler at `/api/webhooks/twilio` is preserved untouched for tenants who haven't migrated
+- `twilioSig.ts` helper (`buildFormSignedString` / `computeFormSignature` / `verifyTwilioFormSignature`) cross-checked against Node's `crypto.createHmac('sha1', ...)` to guarantee bit-for-bit compatibility with Twilio's reference helper
 
 Still to do:
 - **Native signature verification** for Twilio (X-Twilio-Signature) + Mailgun HMAC, as alternatives to the shared-secret pattern
