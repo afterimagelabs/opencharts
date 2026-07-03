@@ -24,6 +24,11 @@ export default {
           deep: '#5a1515',
         },
         moss: '#3a5a3a',
+        // Muted ochre for "in-progress but positive" tracking statuses
+        // (update from provider, records ready to retrieve). Dark enough to
+        // read as body text on the paper background; distinct from seal (red)
+        // and moss (green).
+        amber: '#8a5a12',
       },
       maxWidth: {
         prose: '68ch',
