@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
+import {
+  resolveStatus,
+  statusToPill,
+  recordsEventRow,
+  type RecordsRequestStatus,
+  type TimelineEventType,
+  type Tone,
+} from '../lib/trackingStatus';
 
-type EventType =
-  | 'call'
-  | 'fax'
-  | 'email'
-  | 'records_received'
-  | 'records_incomplete'
-  | 'note_added';
+type EventType = TimelineEventType;
 type ContactChannel = 'call' | 'fax' | 'email';
 type Event = {
   at: string;
@@ -15,11 +17,18 @@ type Event = {
   // Only set for records_received events. True when ops flagged the
   // returned records as incomplete (partial, missing date ranges, etc.).
   incomplete?: boolean;
+  // Only set for records_available events: how the patient retrieves the
+  // records the provider says are ready.
+  access_method?: 'login' | 'link';
 };
 
 type TrackingPayload = {
   hash: string;
   provider_name: string | null;
+  // Canonical records-request status from the CMS endpoint. Optional so the
+  // page still works against a CMS deploy that predates the #19 contract — see
+  // resolveStatus() for the graceful fallback.
+  status?: RecordsRequestStatus | string | null;
   initial_request_at: string | null;
   initial_channel: ContactChannel | null;
   deadline: string | null;
@@ -155,18 +164,20 @@ function Card({ state, hash }: { state: State; hash: string }) {
 function Timeline({ data }: { data: TrackingPayload }) {
   const eventCount = data.events.length;
   const notYetSent = data.initial_request_at === null;
-  const status = useMemo(() => {
-    if (data.records_received) {
-      return { tone: 'moss' as const, label: 'Records received' };
-    }
-    if (notYetSent) {
-      return { tone: 'moss' as const, label: 'Awaiting first contact' };
-    }
-    if (data.deadline_passed) {
-      return { tone: 'seal' as const, label: 'Deadline passed' };
-    }
-    return { tone: 'moss' as const, label: 'Within 30-day window' };
-  }, [data.deadline_passed, notYetSent, data.records_received]);
+  // The canonical status is owned by the CMS endpoint; resolveStatus prefers it
+  // and falls back to the legacy fields when it's absent (see trackingStatus.ts).
+  const status = useMemo(
+    () =>
+      statusToPill(
+        resolveStatus({
+          status: data.status,
+          records_received: data.records_received,
+          deadline_passed: data.deadline_passed,
+          initial_request_at: data.initial_request_at,
+        }),
+      ),
+    [data.status, data.records_received, data.deadline_passed, data.initial_request_at],
+  );
 
   return (
     <Panel>
@@ -250,11 +261,11 @@ function Timeline({ data }: { data: TrackingPayload }) {
         </div>
         <div className="divide-y hairline">
           {(() => {
+            // The first OUTBOUND contact (call/fax/email) is the "request
+            // sent" row. Only those three are initiation channels — records_*
+            // lifecycle events and notes are inbound/derived.
             const firstOutboundIdx = data.events.findIndex(
-              (e) =>
-                e.type !== 'records_received' &&
-                e.type !== 'records_incomplete' &&
-                e.type !== 'note_added',
+              (e) => e.type === 'call' || e.type === 'fax' || e.type === 'email',
             );
 
             // Splice in a synthetic "30-day deadline reached" milestone
@@ -303,9 +314,20 @@ function Timeline({ data }: { data: TrackingPayload }) {
   );
 }
 
+// Text-color accent per tone, for timeline rows.
+const ROW_ACCENT: Record<Tone, string> = {
+  moss: 'text-moss font-semibold',
+  seal: 'text-seal font-semibold',
+  amber: 'text-amber font-semibold',
+  ink: 'text-ink',
+};
+
 function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
   let label: React.ReactNode;
   let accent: string;
+  // Richer inbound records signals (#19): status update / records ready /
+  // denial. Handled by the shared pure helper so the copy stays in one place.
+  const richRow = recordsEventRow(event.type, event.access_method);
   if (event.type === 'records_received') {
     if (event.incomplete) {
       label = (
@@ -319,6 +341,9 @@ function Row({ event, isFirst }: { event: Event; isFirst: boolean }) {
       label = 'Records received';
       accent = 'text-moss font-semibold';
     }
+  } else if (richRow) {
+    label = richRow.label;
+    accent = ROW_ACCENT[richRow.tone];
   } else if (event.type === 'records_incomplete') {
     label = 'Records flagged incomplete';
     accent = 'text-seal font-semibold';
@@ -465,24 +490,28 @@ function MilestoneRow({ at }: { at: string }) {
   );
 }
 
-function StatusPill({
-  tone,
-  children,
-}: {
-  tone: 'moss' | 'seal';
-  children: React.ReactNode;
-}) {
-  const cls =
-    tone === 'seal'
-      ? 'bg-seal/10 text-seal border-seal/40'
-      : 'bg-moss/10 text-moss border-moss/40';
+const PILL_CLS: Record<Tone, string> = {
+  seal: 'bg-seal/10 text-seal border-seal/40',
+  amber: 'bg-amber/10 text-amber border-amber/40',
+  ink: 'bg-ink/5 text-ink-soft border-ink/25',
+  moss: 'bg-moss/10 text-moss border-moss/40',
+};
+
+const PILL_DOT: Record<Tone, string> = {
+  seal: 'bg-seal',
+  amber: 'bg-amber',
+  ink: 'bg-ink-muted',
+  moss: 'bg-moss',
+};
+
+function StatusPill({ tone, children }: { tone: Tone; children: React.ReactNode }) {
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1 rounded-sm border text-[11px] uppercase tracking-[0.18em] font-semibold ${cls}`}
+      className={`inline-flex items-center gap-2 px-3 py-1 rounded-sm border text-[11px] uppercase tracking-[0.18em] font-semibold ${PILL_CLS[tone]}`}
     >
       <span
         aria-hidden
-        className={`inline-block w-1.5 h-1.5 rounded-full ${tone === 'seal' ? 'bg-seal' : 'bg-moss'}`}
+        className={`inline-block w-1.5 h-1.5 rounded-full ${PILL_DOT[tone]}`}
       />
       {children}
     </span>
