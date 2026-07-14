@@ -25,6 +25,11 @@ type Event = {
 type TrackingPayload = {
   hash: string;
   provider_name: string | null;
+  // The office's records-request confirmation / reference number (e.g. an MRO
+  // request ID) captured on a provider call. Optional + nullable: only a
+  // minority of requests have one, and a CMS deploy predating the field omits
+  // it — rendered only when present. (CMS #1505 C / opencharts#21.)
+  confirmation_number?: string | null;
   // Canonical records-request status from the CMS endpoint. Optional so the
   // page still works against a CMS deploy that predates the #19 contract — see
   // resolveStatus() for the graceful fallback.
@@ -195,6 +200,20 @@ function Timeline({ data }: { data: TrackingPayload }) {
           </div>
           <div className="font-serif text-2xl mt-1 font-semibold text-ink leading-tight">
             {data.provider_name}
+          </div>
+        </div>
+      )}
+
+      {/* The office's confirmation / reference # for this request (opencharts#21).
+          Shown only when the CMS payload carries one — a number the patient can
+          quote if they contact the provider's records office directly. */}
+      {data.confirmation_number && (
+        <div className="mt-3 mb-2">
+          <div className="text-[10px] uppercase tracking-[0.22em] text-ink-muted">
+            Confirmation #
+          </div>
+          <div className="font-mono text-sm mt-1 text-ink-soft break-words">
+            {data.confirmation_number}
           </div>
         </div>
       )}
