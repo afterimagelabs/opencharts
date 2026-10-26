@@ -30,7 +30,7 @@ The site deploys to Cloudflare Pages on every push to `main`.
 - **Framework preset:** Vite
 - **Build command:** `npm run build`
 - **Build output:** `dist`
-- **Node version:** 20 (pinned via `.nvmrc`)
+- **Node version:** 22 (pinned via `.nvmrc`)
 
 ## Contributing
 
