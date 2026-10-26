@@ -1,0 +1,152 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "group:monorepos"
+  ],
+  "timezone": "America/New_York",
+  "schedule": [
+    "before 6am on monday"
+  ],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "rebaseWhen": "conflicted",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Dependency Dashboard 🤖",
+  "configMigration": true,
+  "labels": [
+    "dependencies"
+  ],
+  "osvVulnerabilityAlerts": true,
+  "prBodyNotes": [
+    "This PR was opened by the Renovate GitHub App. Routine updates run weekly (Mon pre-6am ET), grouped and concurrency-capped; security advisories open immediately with a `security` label. This repo has NO pull-request CI, so green checks prove nothing here: NOTHING auto-merges (security included) and every PR waits for human review. Merging to the default branch may auto-deploy. Pattern documented in afterimagelabs/cms docs/dependency-automation.md."
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": [
+      "before 6am on the first day of the month"
+    ],
+    "commitMessageAction": "Refresh",
+    "groupName": "lockfile maintenance",
+    "automerge": false
+  },
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "schedule": [
+      "at any time"
+    ],
+    "labels": [
+      "security"
+    ],
+    "minimumReleaseAge": "0 days",
+    "automerge": false
+  },
+  "packageRules": [
+    {
+      "description": "Stabilization window — let routine releases bake before we adopt them (does NOT apply to security PRs, which run via vulnerabilityAlerts).",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Production npm deps (non-major), grouped into one weekly PR. NOT auto-merged on purpose: merge to main auto-deploys to prod, and green CI under-proves a runtime dep's safety in this repo (supabase-js resolves {error} instead of throwing; mocked tests have passed while prod was broken). A human reviews these.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "dependencies"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "npm production dependencies (non-major)",
+      "automerge": false
+    },
+    {
+      "description": "devDependencies (non-major), grouped. Would be the auto-merge safe tier, but this repo has no PR CI, so it is human-reviewed.",
+      "matchManagers": [
+        "npm"
+      ],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "devDependencies (non-major)",
+      "automerge": false
+    },
+    {
+      "description": "All @types/* together. Would be the auto-merge safe tier, but this repo has no PR CI, so it is human-reviewed.",
+      "matchPackageNames": [
+        "@types/**"
+      ],
+      "groupName": "type definitions (@types)",
+      "automerge": false
+    },
+    {
+      "description": "GitHub Actions minor/patch/digest, grouped. Would be the auto-merge safe tier, but this repo has no PR CI, so it is human-reviewed.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "groupName": "github-actions",
+      "automerge": false
+    },
+    {
+      "description": "Runtime Docker base image (node:* / python:*). All FROM lines move together in one labeled PR; majors also show on the dashboard so an EOL cannot silently rot. NOT auto-merged: a runtime bump always gets a human.",
+      "matchManagers": [
+        "dockerfile",
+        "docker-compose"
+      ],
+      "matchPackageNames": [
+        "node",
+        "python"
+      ],
+      "groupName": "runtime docker base image (node/python)",
+      "labels": [
+        "dependencies",
+        "runtime-upgrade"
+      ],
+      "prPriority": 5,
+      "minimumReleaseAge": "3 days",
+      "automerge": false
+    },
+    {
+      "description": "Other Docker images (compose services such as postgres/redis/mongo) — grouped, non-runtime, human-reviewed.",
+      "matchManagers": [
+        "dockerfile",
+        "docker-compose"
+      ],
+      "matchPackageNames": [
+        "!node",
+        "!python"
+      ],
+      "groupName": "docker images (non-node)",
+      "automerge": false
+    },
+    {
+      "description": "Major bumps — always human-reviewed, one at a time (config:recommended opens them individually). Labeled for visibility. This also catches GitHub Actions majors.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "labels": [
+        "dependencies",
+        "major-update"
+      ],
+      "automerge": false
+    }
+  ]
+}
