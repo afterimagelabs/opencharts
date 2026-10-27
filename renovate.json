@@ -6,6 +6,10 @@
     ":semanticCommits",
     "group:monorepos"
   ],
+  "baseBranchPatterns": [
+    "main",
+    "production-ezra"
+  ],
   "timezone": "America/New_York",
   "schedule": [
     "before 6am on monday"
