@@ -17,8 +17,10 @@
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "rebaseWhen": "conflicted",
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Dependency Dashboard 🤖",
+  "dependencyDashboard": {
+    "enabled": true,
+    "title": "Dependency Dashboard 🤖"
+  },
   "configMigration": true,
   "labels": [
     "dependencies"
